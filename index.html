@@ -1,0 +1,3256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OS Lab · Interactive Shell Script Mastery & Playground</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --fg: #0f172a;
+  --mut: #64748b;
+  --card: #ffffff;
+  --card-subtle: #f1f5f9;
+  --bd: #e2e8f0;
+  --bd-focus: #0ea5e9;
+  --ac: #0d9488;
+  --ac-hover: #0f766e;
+  --ac-subtle: #f0fdfa;
+  --accent-text: #ffffff;
+  --code-bg: #0b1017;
+  --code-fg: #f1f5f9;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #0284c7;
+  --tag-bg: #e0f2fe;
+  --tag-fg: #0369a1;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --radius: 12px;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  --bg: #090d12;
+  --fg: #f1f5f9;
+  --mut: #94a3b8;
+  --card: #111720;
+  --card-subtle: #171f2c;
+  --bd: #222d3d;
+  --bd-focus: #38bdf8;
+  --ac: #2dd4bf;
+  --ac-hover: #14b8a6;
+  --ac-subtle: #134e4a33;
+  --accent-text: #042f2e;
+  --code-bg: #080c10;
+  --code-fg: #f1f5f9;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+  --tag-bg: #0c4a6e;
+  --tag-fg: #7dd3fc;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 20px -3px rgba(0,0,0,0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #090d12;
+    --fg: #f1f5f9;
+    --mut: #94a3b8;
+    --card: #111720;
+    --card-subtle: #171f2c;
+    --bd: #222d3d;
+    --bd-focus: #38bdf8;
+    --ac: #2dd4bf;
+    --ac-hover: #14b8a6;
+    --ac-subtle: #134e4a33;
+    --accent-text: #042f2e;
+    --code-bg: #080c10;
+    --code-fg: #f1f5f9;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #38bdf8;
+    --tag-bg: #0c4a6e;
+    --tag-fg: #7dd3fc;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    --shadow-lg: 0 10px 20px -3px rgba(0,0,0,0.5);
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  transition: background .2s ease, color .2s ease;
+}
+
+header {
+  border-bottom: 1px solid var(--bd);
+  background: var(--card);
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow);
+}
+.brand-area { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--ac), #0284c7);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 19px;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.3);
+}
+.brand-title { margin: 0; font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.brand-subtitle { font-size: 12px; color: var(--mut); margin: 0; }
+
+.header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.progress-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card-subtle);
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: var(--fg);
+}
+.prog-bar-bg { width: 70px; height: 7px; background: var(--bd); border-radius: 4px; overflow: hidden; }
+.prog-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width .3s ease; }
+
+button {
+  background: var(--ac);
+  color: var(--accent-text);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .15s ease;
+}
+button:hover { opacity: 0.92; transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button.btn-sec { background: var(--card-subtle); color: var(--fg); border-color: var(--bd); }
+button.btn-sec:hover { background: var(--bd); }
+button.btn-subtle { background: transparent; color: var(--mut); border-color: transparent; padding: 4px 8px; }
+button.btn-subtle:hover { color: var(--fg); background: var(--card-subtle); }
+
+.w {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 20px;
+  padding: 20px 24px 60px;
+  max-width: 1400px;
+  margin: auto;
+}
+
+nav {
+  border: 1px solid var(--bd);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px;
+  position: sticky;
+  top: 72px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+.search-wrapper { position: relative; margin-bottom: 10px; }
+.search-input {
+  width: 100%;
+  padding: 8px 30px 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--bd);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: border .15s ease;
+}
+.search-input:focus { border-color: var(--bd-focus); }
+.search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--mut);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+.filter-pills { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; }
+.pill {
+  padding: 3px 9px;
+  font-size: 12px;
+  border-radius: 12px;
+  background: var(--card-subtle);
+  border: 1px solid var(--bd);
+  color: var(--mut);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pill.active { background: var(--ac); color: var(--accent-text); border-color: var(--ac); font-weight: 600; }
+
+nav h4 {
+  margin: 12px 6px 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--mut);
+}
+nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 13.5px;
+  margin-bottom: 2px;
+  transition: background .12s ease;
+}
+nav a:hover { background: var(--card-subtle); }
+nav a.on { background: var(--ac); color: var(--accent-text); font-weight: 600; }
+.q-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bd);
+  color: var(--fg);
+  font-weight: 600;
+  margin-right: 6px;
+}
+nav a.on .q-badge { background: rgba(255,255,255,0.25); color: #fff; }
+.nav-status { font-size: 12px; }
+
+main { min-width: 0; }
+.card {
+  border: 1px solid var(--bd);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.q-title-group h2 { margin: 0 0 4px; font-size: 22px; font-weight: 700; }
+.q-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+}
+.master-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-subtle);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  transition: all .15s ease;
+}
+.master-btn.mastered {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+  font-weight: 600;
+}
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--bd);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+.tab-btn {
+  background: transparent;
+  color: var(--mut);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--fg); background: transparent; transform: none; }
+.tab-btn.active { color: var(--ac); border-bottom-color: var(--ac); font-weight: 600; }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* Code Area & Syntax Highlighting */
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #141b24;
+  color: #94a3b8;
+  padding: 8px 14px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 13px;
+  border: 1px solid #1e293b;
+  border-bottom: none;
+}
+.code-actions { display: flex; gap: 6px; }
+pre.code-block {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid #1e293b;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 14px 0;
+  margin: 0 0 12px;
+  overflow-x: auto;
+  font: 13.5px/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  counter-reset: l;
+}
+.ln {
+  display: block;
+  padding: 0 16px 0 8px;
+  white-space: pre;
+  counter-increment: l;
+  border-left: 3px solid transparent;
+}
+.ln:before {
+  content: counter(l);
+  display: inline-block;
+  width: 28px;
+  color: #475569;
+  margin-right: 12px;
+  text-align: right;
+  user-select: none;
+}
+.ln.on { background: rgba(250, 204, 21, 0.15); border-left-color: #facc15; }
+
+/* Syntax tokens */
+.sh-kw { color: #c084fc; font-weight: 600; }
+.sh-builtin { color: #38bdf8; font-weight: 600; }
+.sh-var { color: #67e8f9; }
+.sh-str { color: #86efac; }
+.sh-num { color: #fca5a5; }
+.sh-op { color: #f472b6; }
+.sh-com { color: #64748b; font-style: italic; }
+.sh-punc { color: #94a3b8; }
+
+.say {
+  min-height: 48px;
+  margin: 10px 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--card-subtle);
+  border: 1px solid var(--bd);
+  font-size: 14px;
+}
+
+.tw { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+td, th { border: 1px solid var(--bd); padding: 7px 10px; text-align: center; font-size: 13.5px; }
+th { background: var(--card-subtle); font-weight: 600; }
+
+input[type=number], input[type=text] {
+  padding: 6px 10px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13.5px;
+}
+input[type=number]:focus, input[type=text]:focus { border-color: var(--bd-focus); outline: none; }
+
+/* Gantt Chart */
+.g {
+  display: flex;
+  position: relative;
+  margin: 22px 0 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  overflow: visible;
+}
+.s {
+  position: relative;
+  min-width: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  transform-origin: left;
+  animation: pop .45s both;
+}
+.s i {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  font: 12px ui-monospace, monospace;
+  color: var(--mut);
+  font-style: normal;
+  font-weight: normal;
+}
+.g em {
+  position: absolute;
+  right: 0;
+  bottom: -22px;
+  font: 12px ui-monospace, monospace;
+  color: var(--mut);
+  font-style: normal;
+  font-weight: 600;
+}
+@keyframes pop { from { transform: scaleX(0); opacity: 0; } }
+
+/* Explain mode token hover */
+.tk { border-bottom: 1px dotted var(--mut); cursor: help; }
+.tk:hover { background: rgba(250, 204, 21, 0.25); border-radius: 2px; }
+#tip {
+  position: fixed;
+  z-index: 99;
+  max-width: min(440px, 92vw);
+  display: none;
+  background: #0d1117;
+  color: #e6edf3;
+  padding: 12px 15px;
+  border-radius: 10px;
+  font: 13px/1.55 system-ui, sans-serif;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid #30363d;
+  pointer-events: none;
+}
+
+/* Practice mode */
+textarea.pc {
+  width: 100%;
+  min-height: 220px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 14px;
+  font: 13.5px/1.65 ui-monospace, Menlo, Consolas, monospace;
+  tab-size: 2;
+  resize: vertical;
+}
+.pr {
+  display: flex;
+  gap: 10px;
+  padding: 3px 12px;
+  border-left: 4px solid transparent;
+  font: 13px/1.6 ui-monospace, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+}
+.pr i { color: #64748b; min-width: 24px; font-style: normal; user-select: none; }
+.pr.ok { border-left-color: var(--success); background: rgba(34, 197, 94, 0.08); }
+.pr.bad { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+.gh {
+  margin: 4px 0 4px 30px;
+  padding: 8px 12px;
+  border: 1px dashed var(--warning);
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  font-size: 13px;
+}
+.banner {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  margin: 10px 0;
+  border: 1px solid var(--bd);
+}
+.banner.good { background: rgba(34, 197, 94, 0.12); border-color: var(--success); color: var(--success); }
+.banner.warn { background: rgba(245, 158, 11, 0.12); border-color: var(--warning); color: var(--warning); }
+.banner.err { background: rgba(239, 68, 68, 0.12); border-color: var(--danger); color: var(--danger); }
+mark.bd { background: rgba(239, 68, 68, 0.35); color: inherit; border-radius: 3px; text-decoration: line-through; }
+mark.gd { background: rgba(34, 197, 94, 0.35); color: inherit; border-radius: 3px; }
+
+/* Interactive Simulator Boxes */
+.sim-box {
+  background: var(--card-subtle);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 12px 0;
+}
+.sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.sim-result {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  min-height: 48px;
+}
+.sim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 768px) { .sim-grid { grid-template-columns: 1fr; } }
+.sim-area {
+  width: 100%;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--bd);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Viva Accordion */
+.viva-item {
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background: var(--card);
+  overflow: hidden;
+}
+.viva-q {
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-subtle);
+  user-select: none;
+}
+.viva-q:hover { background: var(--bd); }
+.viva-a {
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  border-top: 1px solid var(--bd);
+  color: var(--fg);
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-content {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius);
+  max-width: 800px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--bd);
+  padding-bottom: 10px;
+}
+.modal-header h3 { margin: 0; font-size: 18px; }
+
+/* Bottom Nav */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .w { grid-template-columns: 1fr; padding: 12px; }
+  nav { position: static; max-height: 38vh; }
+  .q-header { flex-direction: column; align-items: stretch; }
+  .header-actions { justify-content: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-area">
+    <div class="logo-icon">$_</div>
+    <div>
+      <h1 class="brand-title">OS Lab · Shell Script Answers</h1>
+      <p class="brand-subtitle">Interactive Playground, Gantt Visualizer, Viva Voce Q&A, and Practice Lab</p>
+    </div>
+  </div>
+  
+  <div class="header-actions">
+    <div class="progress-pill">
+      <span>Mastered: <strong id="m-count">0</strong>/23</span>
+      <div class="prog-bar-bg"><div class="prog-bar-fill" id="m-fill"></div></div>
+    </div>
+    <button class="btn-sec" onclick="toggleTheme()" id="theme-btn" title="Toggle Theme (Hotkey: t)">🌗 Mode</button>
+    <button class="btn-sec" onclick="togglePracticeGlobal()" id="pm-btn" title="Toggle Practice Mode (Hotkey: p)">📝 Practice</button>
+    <button class="btn-sec" onclick="openMistakesModal()" title="View Mistakes Notebook">📒 Mistakes</button>
+    <button class="btn-sec" onclick="openCheatModal()" title="Bash Quick Reference (Hotkey: ?)">📖 Cheat Sheet</button>
+    <button class="btn-sec" onclick="openShortcutsModal()" title="Keyboard Shortcuts">⌨️ Keys</button>
+    <button class="btn-sec" onclick="downloadAllScripts()" title="Download All 23 Scripts">💾 Download All</button>
+  </div>
+</header>
+
+<div class="w">
+  <nav id="nav">
+    <div class="search-wrapper">
+      <input class="search-input" id="sq" placeholder="Search questions, commands, logic... (/)" oninput="filterQuestions()">
+      <button class="search-clear" onclick="$('sq').value='';filterQuestions();">✕</button>
+    </div>
+    
+    <div class="filter-pills">
+      <div class="pill active" onclick="setCategoryFilter('all', this)">All (23)</div>
+      <div class="pill" onclick="setCategoryFilter('Basics', this)">Basics (9)</div>
+      <div class="pill" onclick="setCategoryFilter('CPU Scheduling', this)">Scheduling (9)</div>
+      <div class="pill" onclick="setCategoryFilter('Deadlock', this)">Deadlock (2)</div>
+      <div class="pill" onclick="setCategoryFilter('Synchronization', this)">Sync (3)</div>
+      <div class="pill" onclick="setCategoryFilter('mastered', this)">⭐ Mastered</div>
+    </div>
+    
+    <div id="nav-list"></div>
+  </nav>
+  
+  <main id="main"></main>
+</div>
+
+<!-- Modal Container -->
+<div id="modal-container" style="display:none"></div>
+
+<!-- Data Scripts -->
+<script type="text/plain" id="d">
+@@ Basics | 1. Prime or not
+read -p "Number: " n; p=1 #@ Read n. p=1 means "assume prime until proven otherwise".
+((n<2)) && p=0 #@ 0 and 1 are not prime.
+for ((i=2;i*i<=n;i++)); do ((n%i==0)) && p=0; done #@ Try divisors 2 up to the square root of n. If any divides n with remainder 0, n is not prime.
+((p)) && echo Prime || echo "Not prime" #@ p is still 1, so Prime. Otherwise Not prime.
+@@ Basics | 2. Palindrome or not
+read -p "Word or number: " s #@ Read the text into s.
+[ "$s" = "$(rev <<< "$s")" ] && echo Palindrome || echo "Not palindrome" #@ rev reverses the text. If the reversed text equals the original (racecar, 121) it is a palindrome.
+@@ Basics | 3. Largest and smallest number
+read -p "Numbers: " -a a #@ -a stores all typed numbers in the array a.
+s=($(printf "%s\n" "${a[@]}" | sort -n)) #@ Print one number per line, sort numerically, store back in array s (smallest first).
+echo "Smallest: ${s[0]}  Largest: ${s[-1]}" #@ First element is the smallest, last element (index -1) is the largest.
+@@ Basics | 4. Search a string in a file
+read -p "String: " s; read -p "File: " f #@ Ask for the search string and the file name.
+grep -n "$s" "$f" || echo "Not found" #@ grep prints every matching line with its line number (-n). If nothing matches, grep fails and the echo runs.
+@@ Basics | 5. Count files, directories, executables
+d=${1:-.} #@ Directory is the first argument, or the current folder (.) if none is given.
+echo "Files: $(find $d -maxdepth 1 -type f | wc -l)" #@ find lists regular files (-type f) in this folder only; wc -l counts the lines.
+echo "Dirs: $(( $(find $d -maxdepth 1 -type d | wc -l) - 1 ))" #@ Same for directories. Subtract 1 because find also lists the folder itself.
+echo "Executables: $(find $d -maxdepth 1 -type f -executable | wc -l)" #@ -executable keeps only files you are allowed to run.
+@@ Basics | 6. File, directory or something else
+read -p "Name: " n #@ Read a name from the user.
+if [ -f "$n" ]; then echo File #@ -f asks: is it a regular file?
+elif [ -d "$n" ]; then echo Directory #@ -d asks: is it a directory?
+elif [ -e "$n" ]; then echo "Something else (link, device...)" #@ -e: it exists but is neither of the above.
+else echo "Does not exist"; fi #@ Nothing with that name exists.
+@@ Basics | 7. Compile and create an executable
+gcc "$1" -o "${1%.c}" #@ Compile the C file given as argument. ${1%.c} cuts off ".c", so hello.c becomes the program hello.
+chmod +x "${1%.c}" #@ Make sure the output file is executable.
+./"${1%.c}" #@ Run the program we just built.
+@@ Basics | 8. Remove even lines (file name as argument)
+sed -i '2~2d' "$1" #@ $1 is the file name. "2~2d" means start at line 2, every 2nd line, delete. So all even lines go. -i edits the file in place.
+@@ Basics | 9. Remove duplicate files
+md5sum * 2>/dev/null | #@ Give every file a fingerprint (hash) of its content. Same content means same hash. Errors for folders are hidden.
+sort | #@ Sort so identical hashes sit next to each other.
+awk 'seen[$1]++{print $2}' | #@ Count each hash. The first file with a hash passes silently, later copies print their names.
+xargs -r rm -v #@ Delete the printed duplicates and show what was removed. Replace rm with echo first to preview.
+@@ CPU Scheduling | 10. FCFS | fcfs
+read -p "Processes: " n #@ n = number of processes. Any arrival order works.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst: " a[i] b[i]; done #@ Store arrival times in a[] and bursts in b[].
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+for ((k=1,t=0;k<=n;k++)); do #@ One round per process. t is the clock.
+m=0 #@ m = chosen process. 0 means none yet.
+for ((i=1;i<=n;i++)); do ((!d[i] && a[i]<=t && (!m || a[i]<a[m]))) && m=$i; done #@ Among processes that are not done (d[i]) and have arrived, pick the EARLIEST arrival. That is first come, first served.
+((m)) || { ((t++,k--)); continue; } #@ Nobody has arrived yet: the CPU idles one tick and this round is repeated.
+((t+=b[m], d[m]=1)); fin $m $t #@ Run it to completion, mark it done, print its result.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 11. SJF (non-preemptive) | sjf
+read -p "Processes: " n #@ n = number of processes. Any arrival order works.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst: " a[i] b[i]; done #@ Store arrival times in a[] and bursts in b[].
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+for ((k=1,t=0;k<=n;k++)); do #@ One round per process. t is the clock.
+m=0 #@ m = chosen process. 0 means none yet.
+for ((i=1;i<=n;i++)); do ((!d[i] && a[i]<=t && (!m || b[i]<b[m]))) && m=$i; done #@ Among processes that are not done and have arrived, pick the SMALLEST burst.
+((m)) || { ((t++,k--)); continue; } #@ Nobody has arrived yet: the CPU idles one tick and this round is repeated.
+((t+=b[m], d[m]=1)); fin $m $t #@ Run it to completion, mark it done, print its result.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 12. SRTN (preemptive SJF) | srtn
+read -p "Processes: " n #@ n = number of processes.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst: " a[i] b[i]; r[i]=${b[i]}; done #@ Store arrival and burst. r[] is the remaining time, it starts equal to the burst.
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+for ((t=0,left=n;left>0;t++)); do #@ Each loop is 1 time unit. Continue until every process finishes.
+m=0 #@ m = chosen process. 0 means none yet.
+for ((i=1;i<=n;i++)); do ((r[i]>0 && a[i]<=t && (!m || r[i]<r[m]))) && m=$i; done #@ Every tick pick the arrived process with the shortest REMAINING time. A new short job therefore preempts the running one.
+((m)) || continue #@ Idle tick: nobody to run.
+((--r[m]==0)) && { ((left--)); fin $m $((t+1)); } #@ Run for 1 unit. If remaining reaches 0 the process is finished: print its result.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 13. Priority (preemptive) | pp
+read -p "Processes: " n #@ n = number of processes.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst priority: " a[i] b[i] p[i]; r[i]=${b[i]}; done #@ Store arrival, burst and priority (smaller number = higher priority). r[] is the remaining time.
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+for ((t=0,left=n;left>0;t++)); do #@ Each loop is 1 time unit. Continue until every process finishes.
+m=0 #@ m = chosen process. 0 means none yet.
+for ((i=1;i<=n;i++)); do ((r[i]>0 && a[i]<=t && (!m || p[i]<p[m]))) && m=$i; done #@ Every tick pick the arrived process with the best (lowest) priority number. A higher-priority arrival preempts at once.
+((m)) || continue #@ Idle tick: nobody to run.
+((--r[m]==0)) && { ((left--)); fin $m $((t+1)); } #@ Run for 1 unit. If remaining reaches 0 the process is finished: print its result.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 14. Priority (non-preemptive) | pnp
+read -p "Processes: " n #@ n = number of processes. Any arrival order works.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst priority: " a[i] b[i] p[i]; done #@ Store arrival, burst and priority (smaller number = higher priority).
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+for ((k=1,t=0;k<=n;k++)); do #@ One round per process. t is the clock.
+m=0 #@ m = chosen process. 0 means none yet.
+for ((i=1;i<=n;i++)); do ((!d[i] && a[i]<=t && (!m || p[i]<p[m]))) && m=$i; done #@ Among processes that are not done and have arrived, pick the best priority (smallest number).
+((m)) || { ((t++,k--)); continue; } #@ Nobody has arrived yet: the CPU idles one tick and this round is repeated.
+((t+=b[m], d[m]=1)); fin $m $t #@ Run it to completion, mark it done, print its result.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 15. Round Robin (with context switch) | rrcs
+read -p "Processes quantum switch-time: " n q cs #@ n processes, time quantum q, context-switch time cs.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst: " a[i] b[i]; r[i]=${b[i]}; done #@ Store arrival and burst. r[] is the remaining time.
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+add(){ for ((j=1;j<=n;j++)); do ((a[j]<=t && !s[j])) && { s[j]=1; Q+=($j); }; done; } #@ add puts every process that has arrived by now (and is not queued yet) at the back of the ready queue Q.
+t=0; left=n; add #@ t is the clock. Queue the processes that arrive at time 0.
+while ((left)); do #@ Repeat until every process is finished.
+((${#Q[@]})) || { ((t++)); add; continue; } #@ Queue empty: the CPU idles one tick, then checks for new arrivals.
+i=${Q[0]}; Q=("${Q[@]:1}") #@ Take the process at the FRONT of the queue and remove it from the queue.
+x=$((r[i]<q?r[i]:q)); ((r[i]-=x)) #@ It runs for one quantum, or less if it needs less. Reduce its remaining time.
+for ((k=0;k<x;k++)); do ((t++)); add; done #@ Move the clock tick by tick, queueing any process that arrives meanwhile. New arrivals join the queue BEFORE the preempted process.
+((r[i])) && Q+=($i) || { ((left--)); fin $i $t; } #@ Work left: go to the back of the queue. Otherwise it is finished: print its result.
+((left)) && for ((k=0;k<cs;k++)); do ((t++)); add; done #@ Context switch: the CPU wastes cs time units. Arrivals are still queued.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 16. Round Robin (without context switch) | rr
+read -p "Processes quantum: " n q #@ n processes, time quantum q.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst: " a[i] b[i]; r[i]=${b[i]}; done #@ Store arrival and burst. r[] is the remaining time.
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+add(){ for ((j=1;j<=n;j++)); do ((a[j]<=t && !s[j])) && { s[j]=1; Q+=($j); }; done; } #@ add puts every process that has arrived by now (and is not queued yet) at the back of the ready queue Q.
+t=0; left=n; add #@ t is the clock. Queue the processes that arrive at time 0.
+while ((left)); do #@ Repeat until every process is finished.
+((${#Q[@]})) || { ((t++)); add; continue; } #@ Queue empty: the CPU idles one tick, then checks for new arrivals.
+i=${Q[0]}; Q=("${Q[@]:1}") #@ Take the process at the FRONT of the queue and remove it from the queue.
+x=$((r[i]<q?r[i]:q)); ((r[i]-=x)) #@ It runs for one quantum, or less if it needs less. Reduce its remaining time.
+for ((k=0;k<x;k++)); do ((t++)); add; done #@ Move the clock tick by tick, queueing any process that arrives meanwhile. New arrivals join the queue BEFORE the preempted process.
+((r[i])) && Q+=($i) || { ((left--)); fin $i $t; } #@ Work left: go to the back of the queue. Otherwise it is finished: print its result.
+done
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 17. General scheduler (user picks algorithm) | srtn
+echo "1 FCFS 2 SJF 3 SRTN 4 PRIORITY-P 5 PRIORITY-NP 6 RR"; read -p "Choose: " c #@ Menu: read the algorithm number into c.
+read -p "Processes: " n; ((c==6)) && read -p "Quantum: " q #@ Read n. For Round Robin also read the quantum q.
+for ((i=1;i<=n;i++)); do read -p "P$i arrival burst priority: " a[i] b[i] p[i]; r[i]=${b[i]}; done #@ Read arrival, burst and priority for every process (unused values are ignored). r[] is the remaining time.
+fin(){ ((tat=$2-a[$1], wt=tat-b[$1], T+=tat, W+=wt)); echo "P$1 finish=$2 TAT=$tat WT=$wt"; } #@ Helper run when a process ends: TAT = finish - arrival, WT = TAT - burst. It also adds both to the totals T and W for the averages.
+if ((c<6)); then #@ Algorithms 1 to 5 share one tick-by-tick loop. Round Robin (6) is in the else part.
+for ((t=0,left=n,cur=0;left>0;t++)); do #@ Each loop is 1 time unit. cur is the running process (0 = none).
+if ((!cur || c==3 || c==4)); then #@ Choose a new process only if the CPU is free, or if the algorithm is preemptive (3 and 4).
+cur=0
+for ((i=1;i<=n;i++)); do
+((r[i]>0 && a[i]<=t)) || continue #@ Skip processes that are finished or have not arrived.
+case $c in 1) v=${a[i]};; 2) v=${b[i]};; 3) v=${r[i]};; *) v=${p[i]};; esac #@ The sort key: 1 arrival, 2 burst, 3 remaining time, otherwise priority.
+((!cur || v<best)) && { cur=$i; best=$v; } #@ Keep the process with the smallest key so far.
+done
+fi
+((cur)) || continue #@ Nothing to run: idle tick.
+((--r[cur]==0)) && { ((left--)); fin $cur $((t+1)); cur=0; } #@ Run 1 unit. If remaining reaches 0 the process finishes: print it and free the CPU.
+done
+else
+add(){ for ((j=1;j<=n;j++)); do ((a[j]<=t && !s[j])) && { s[j]=1; Q+=($j); }; done; } #@ Round Robin part (same as question 16): add queues newly arrived processes.
+t=0; left=n; add #@ t is the clock. Queue what has arrived at time 0.
+while ((left)); do
+((${#Q[@]})) || { ((t++)); add; continue; } #@ Queue empty: the CPU idles one tick.
+i=${Q[0]}; Q=("${Q[@]:1}") #@ Take the front process out of the queue.
+x=$((r[i]<q?r[i]:q)); ((r[i]-=x)) #@ It runs one quantum, or less. Reduce its remaining time.
+for ((k=0;k<x;k++)); do ((t++)); add; done #@ Advance the clock tick by tick, queueing new arrivals.
+((r[i])) && Q+=($i) || { ((left--)); fin $i $t; } #@ Not finished: back of the queue. Finished: print it.
+done
+fi
+awk -v T=$T -v W=$W -v n=$n 'BEGIN{printf "Average TAT=%.2f  Average WT=%.2f\n",T/n,W/n}' #@ Print the averages. awk is used because bash cannot do decimals.
+@@ CPU Scheduling | 18. Multilevel queue | mlq
+read -p "Processes: " n #@ Number of processes. All arrive at time 0.
+for ((i=1;i<=n;i++)); do read -p "P$i queue(1=system 2=user) burst: " q[i] b[i]; done #@ Each process belongs to queue 1 (system) or queue 2 (user).
+for k in 1 2; do #@ Queue 1 is served completely before queue 2 starts (fixed priority between queues).
+for ((i=1;i<=n;i++)); do ((q[i]==k)) && { ((t+=b[i])); echo "Queue $k: P$i finish=$t TAT=$t WT=$((t-b[i]))"; }; done #@ Inside a queue the processes run FCFS. Waiting time = finish - burst because arrival is 0.
+done
+@@ Deadlock | 19. Banker's algorithm (avoidance / safety check) | bank
+read -p "Processes resources: " n m #@ n processes and m resource types.
+echo Allocation; for ((i=0;i<n;i++)); do read -a r; for ((j=0;j<m;j++)); do A[i*m+j]=${r[j]}; done; done #@ Read the Allocation table row by row. It is stored in one flat array: A[i*m+j] is row i, column j.
+echo Max; for ((i=0;i<n;i++)); do read -a r; for ((j=0;j<m;j++)); do M[i*m+j]=${r[j]}; done; done #@ Read the Max table the same way.
+read -p "Available: " -a W #@ W holds the free resources right now.
+for ((c=0;c<n;c++)); do for ((i=0;i<n;i++)); do #@ Make up to n passes over all the processes.
+((f[i])) && continue #@ Skip processes that already finished.
+ok=1; for ((j=0;j<m;j++)); do ((M[i*m+j]-A[i*m+j]>W[j])) && ok=0; done #@ Need = Max - Allocation. If need is bigger than Available for any resource, the process must wait.
+((ok)) && { for ((j=0;j<m;j++)); do ((W[j]+=A[i*m+j])); done; f[i]=1; s+="P$i "; } #@ It can finish, then it gives its resources back to Available. Add it to the safe sequence.
+done; done
+[ $(wc -w <<< "$s") = $n ] && echo "SAFE: $s" || echo "UNSAFE: deadlock possible" #@ If all n processes made it into the sequence, the state is safe.
+@@ Deadlock | 20. Deadlock detection | bankd
+read -p "Processes resources: " n m #@ n processes and m resource types.
+echo Allocation; for ((i=0;i<n;i++)); do read -a r; for ((j=0;j<m;j++)); do A[i*m+j]=${r[j]}; done; done #@ Read what each process currently holds (flat array, A[i*m+j]).
+echo Request; for ((i=0;i<n;i++)); do read -a r; for ((j=0;j<m;j++)); do R[i*m+j]=${r[j]}; done; done #@ Read what each process is currently asking for.
+read -p "Available: " -a W #@ Free resources right now.
+for ((c=0;c<n;c++)); do for ((i=0;i<n;i++)); do #@ Make up to n passes over all processes.
+((f[i])) && continue #@ Skip finished processes.
+ok=1; for ((j=0;j<m;j++)); do ((R[i*m+j]>W[j])) && ok=0; done #@ Can the current request be satisfied from Available?
+((ok)) && { for ((j=0;j<m;j++)); do ((W[j]+=A[i*m+j])); done; f[i]=1; }  #@ Yes: assume it finishes and releases everything it holds.
+done; done
+for ((i=0;i<n;i++)); do ((f[i])) || d+="P$i "; done #@ Any process that could never finish is deadlocked. Collect them in d.
+[ -z "$d" ] && echo "No deadlock" || echo "Deadlocked: $d" #@ Empty d means no deadlock.
+@@ Synchronization | 21. Dekker's algorithm | dekker
+for f in turn f0 f1; do echo 0 > $f; done #@ Shared variables are files: turn (whose turn it is) and f0, f1 (flags meaning I want to enter). All start at 0.
+g(){ tail -n1 $1; } #@ g reads the LAST line of a file, which is its current value. Writing with >> (append) is never half-finished, so reads are always safe.
+p(){ me=$1; o=$((1-me)); echo 1 >> f$me #@ Process me raises its flag: I want in. o is the other process.
+while [ "$(g f$o)" = 1 ]; do #@ While the other process also wants in...
+if [ "$(g turn)" != $me ]; then echo 0 >> f$me #@ ...and it is not my turn: lower my flag and back off politely.
+while [ "$(g turn)" != $me ]; do :; done; echo 1 >> f$me; fi #@ Wait until the turn becomes mine, then raise my flag again.
+done
+echo "P$me IN critical section"; sleep 1; echo "P$me OUT of critical section" #@ Critical section. Only one process is ever here at a time.
+echo $o >> turn; echo 0 >> f$me; } #@ Give the turn to the other process and lower my flag.
+p 0 & p 1 & wait #@ Start both processes in parallel and wait for them.
+@@ Synchronization | 22. Dining philosophers | phil
+phil(){ l=$1; r=$((($1+1)%5)) #@ Philosopher i uses fork i (left) and fork i+1 (right). The 5 forks form a circle.
+((l>r)) && { t=$l; l=$r; r=$t; } #@ Always pick the LOWER-numbered fork first. This breaks the circular wait, so deadlock cannot happen.
+exec 3>fork$l 4>fork$r #@ Each fork is a file. Open file descriptors 3 and 4 on them.
+flock 3; flock 4 #@ flock locks a fork. If a neighbour holds it we wait here (like a semaphore wait).
+echo "Philosopher $1 eating (forks $l,$r)"; sleep 1 #@ Eating with both forks in hand.
+echo "Philosopher $1 done"; flock -u 4; flock -u 3; } #@ Print done first, then unlock both forks so the neighbours can use them.
+for i in 0 1 2 3 4; do phil $i & done; wait #@ Start all 5 philosophers in parallel.
+@@ Synchronization | 23. Producer-consumer | pc
+mkfifo e f; exec 3<>e 4<>f #@ Make two pipes that act as counting semaphores: e = empty slots, f = full slots. <> opens them for reading and writing so opening never blocks.
+for i in 1 2 3; do echo >&3; done #@ Put 3 tokens in e: the buffer has 3 empty slots.
+producer(){ for i in 1 2 3 4 5 6; do read -u3; echo $i >&4; echo "Produced $i"; done; } #@ Producer: read -u3 takes an empty-slot token (waits if none, meaning the buffer is full), then puts the item into pipe f.
+consumer(){ for i in 1 2 3 4 5 6; do read -u4 x; echo "Consumed $x"; echo >&3; sleep 1; done; } #@ Consumer: read -u4 takes an item (waits if none, meaning the buffer is empty), prints it, then returns an empty-slot token to e.
+producer & consumer & wait; rm e f #@ Run both together, then delete the pipes.
+</script>
+
+<script type="text/plain" id="o">
+{"1": {"c": "bash q1.sh", "i": "17", "o": "Prime", "n": ""}, "2": {"c": "bash q2.sh", "i": "racecar", "o": "Palindrome", "n": ""}, "3": {"c": "bash q3.sh", "i": "5 -3 12 7 0", "o": "Smallest: -3  Largest: 12", "n": ""}, "4": {"c": "bash q4.sh", "i": "apple\nnotes.txt", "o": "1:apple\n3:apple pie", "n": "notes.txt contains the lines: apple, banana, apple pie."}, "5": {"c": "bash q5.sh demo", "i": "", "o": "Files: 3\nDirs: 2\nExecutables: 1", "n": "The folder demo holds files a, b, run.sh (executable) and folders sub and sub2."}, "6": {"c": "bash q6.sh", "i": "notes.txt", "o": "File", "n": ""}, "7": {"c": "bash q7.sh hello.c", "i": "", "o": "Hello OS", "n": "hello.c is a small C program that prints 'Hello OS'. The script compiles it with gcc -o hello, ensures execute permissions with chmod +x, and runs ./hello."}, "8": {"c": "bash q8.sh nums.txt", "i": "", "o": "\n$ cat nums.txt\n1\n3\n5\n7", "n": "nums.txt had the lines 1 to 7. Afterwards only the odd lines are left."}, "9": {"c": "bash q9.sh", "i": "", "o": "removed 'a2'\nremoved 'a3'\n$ ls\na1\nb1", "n": "a1, a2 and a3 have the same content; b1 is different. Only the first copy is kept."}, "10": {"c": "bash q10.sh", "i": "4\n0 5\n1 3\n2 8\n3 6", "o": "P1 finish=5 TAT=5 WT=0\nP2 finish=8 TAT=7 WT=4\nP3 finish=16 TAT=14 WT=6\nP4 finish=22 TAT=19 WT=13\nAverage TAT=11.25  Average WT=5.75", "n": "First line: number of processes. Then one line per process: arrival time and burst time."}, "11": {"c": "bash q11.sh", "i": "4\n0 5\n1 3\n2 8\n3 6", "o": "P1 finish=5 TAT=5 WT=0\nP2 finish=8 TAT=7 WT=4\nP4 finish=14 TAT=11 WT=5\nP3 finish=22 TAT=20 WT=12\nAverage TAT=10.75  Average WT=5.25", "n": "First line: number of processes. Then one line per process: arrival time and burst time."}, "12": {"c": "bash q12.sh", "i": "4\n0 5\n1 3\n2 8\n3 6", "o": "P2 finish=4 TAT=3 WT=0\nP1 finish=8 TAT=8 WT=3\nP4 finish=14 TAT=11 WT=5\nP3 finish=22 TAT=20 WT=12\nAverage TAT=10.50  Average WT=5.00", "n": "First line: number of processes. Then one line per process: arrival time and burst time."}, "13": {"c": "bash q13.sh", "i": "4\n0 5 2\n1 3 1\n2 8 3\n3 6 2", "o": "P2 finish=4 TAT=3 WT=0\nP1 finish=8 TAT=8 WT=3\nP4 finish=14 TAT=11 WT=5\nP3 finish=22 TAT=20 WT=12\nAverage TAT=10.50  Average WT=5.00", "n": "First line: number of processes. Then one line per process: arrival, burst, priority (smaller number = higher priority)."}, "14": {"c": "bash q14.sh", "i": "4\n0 5 2\n1 3 1\n2 8 3\n3 6 2", "o": "P1 finish=5 TAT=5 WT=0\nP2 finish=8 TAT=7 WT=4\nP4 finish=14 TAT=11 WT=5\nP3 finish=22 TAT=20 WT=12\nAverage TAT=10.75  Average WT=5.25", "n": "First line: number of processes. Then one line per process: arrival, burst, priority (smaller number = higher priority)."}, "15": {"c": "bash q15.sh", "i": "4 2 1\n0 5\n1 3\n2 8\n3 6", "o": "P2 finish=16 TAT=15 WT=12\nP1 finish=21 TAT=21 WT=16\nP4 finish=30 TAT=27 WT=21\nP3 finish=33 TAT=31 WT=23\nAverage TAT=23.50  Average WT=18.00", "n": "First line: processes, time quantum, context-switch time. Then arrival and burst of each process."}, "16": {"c": "bash q16.sh", "i": "4 2\n0 5\n1 3\n2 8\n3 6", "o": "P2 finish=11 TAT=10 WT=7\nP1 finish=14 TAT=14 WT=9\nP4 finish=20 TAT=17 WT=11\nP3 finish=22 TAT=20 WT=12\nAverage TAT=15.25  Average WT=9.75", "n": "First line: processes and time quantum. Then arrival and burst of each process."}, "17": {"c": "bash q17.sh", "i": "3\n4\n0 5 2\n1 3 1\n2 8 3\n3 6 2", "o": "1 FCFS 2 SJF 3 SRTN 4 PRIORITY-P 5 PRIORITY-NP 6 RR\nP2 finish=4 TAT=3 WT=0\nP1 finish=8 TAT=8 WT=3\nP4 finish=14 TAT=11 WT=5\nP3 finish=22 TAT=20 WT=12\nAverage TAT=10.50  Average WT=5.00", "n": "3 chooses SRTN. Then: number of processes, then arrival, burst, priority for each."}, "18": {"c": "bash q18.sh", "i": "4\n2 5\n1 3\n2 8\n1 6", "o": "Queue 1: P2 finish=3 TAT=3 WT=0\nQueue 1: P4 finish=9 TAT=9 WT=3\nQueue 2: P1 finish=14 TAT=14 WT=9\nQueue 2: P3 finish=22 TAT=22 WT=14", "n": "Each line: queue number (1 = system, 2 = user) and burst time. All arrive at time 0."}, "19": {"c": "bash q19.sh", "i": "5 3\n0 1 0\n2 0 0\n3 0 2\n2 1 1\n0 0 2\n7 5 3\n3 2 2\n9 0 2\n2 2 2\n4 3 3\n3 3 2", "o": "Allocation\nMax\nSAFE: P1 P3 P4 P0 P2 ", "n": "First line: 5 processes, 3 resource types. Then the Allocation rows, the Max rows and the Available vector."}, "20": {"c": "bash q20.sh", "i": "5 3\n0 1 0\n2 0 0\n3 0 3\n2 1 1\n0 0 2\n0 0 0\n2 0 2\n0 0 1\n1 0 0\n0 0 2\n0 0 0", "o": "Allocation\nRequest\nDeadlocked: P1 P2 P3 P4 ", "n": "First line: 5 processes, 3 resource types. Then the Allocation rows, the Request rows and the Available vector. P0 can finish and nothing else can, so P1 to P4 are deadlocked."}, "21": {"c": "bash q21.sh", "i": "", "o": "P0 IN critical section\nP0 OUT of critical section\nP1 IN critical section\nP1 OUT of critical section", "n": "No input needed. The order of P0 and P1 may differ between runs, but they never overlap."}, "22": {"c": "bash q22.sh", "i": "", "o": "Philosopher 4 eating (forks 0,4)\nPhilosopher 4 done\nPhilosopher 3 eating (forks 3,4)\nPhilosopher 3 done\nPhilosopher 2 eating (forks 2,3)\nPhilosopher 2 done\nPhilosopher 1 eating (forks 1,2)\nPhilosopher 1 done\nPhilosopher 0 eating (forks 0,1)\nPhilosopher 0 done", "n": "No input needed. The order may differ between runs, but neighbours never eat at the same time."}, "23": {"c": "bash q23.sh", "i": "", "o": "Produced 1\nProduced 2\nProduced 3\nConsumed 1\nProduced 4\nConsumed 2\nProduced 5\nConsumed 3\nProduced 6\nConsumed 4\nConsumed 5\nConsumed 6", "n": "No input needed. The producer runs ahead by at most 3 items, because the buffer has 3 slots."}}
+</script>
+
+<script type="text/plain" id="viva-data">
+{"1": [{"q": "Why is the loop condition i*i <= n used instead of i <= n/2 or i < n?", "a": "Every composite number n must have at least one factor less than or equal to \u221an. If no factor divides n up to \u221an, no factor exists above it either (since any pair factor would have to be \u2264 \u221an). This reduces the time complexity from O(n) to O(\u221an)."}, {"q": "What does ((n < 2)) do in Bash arithmetic evaluation?", "a": "Double parentheses (( ... )) evaluate C-style integer expressions. In Bash, if the arithmetic expression inside is true (non-zero), the command returns exit code 0 (success). If false (zero), it returns exit code 1. Here, if n < 2, the exit code is 0, so && p=0 executes."}, {"q": "What is the meaning of the exit status of a Linux command?", "a": "Every Linux command returns an integer exit code between 0 and 255 to the parent shell. Exit code 0 denotes success, while any non-zero value (typically 1 to 255) indicates failure, an error, or a false conditional test."}], "2": [{"q": "What is the here-string operator <<< and how does it differ from a pipe?", "a": "The <<< operator is a Bash here-string that passes a string variable directly to standard input of a command (e.g. rev <<< \"$s\"). Unlike echo \"$s\" | rev, it runs in the current shell process without spawning a subshell, making it faster and cleaner."}, {"q": "What is the difference between single brackets [ ... ] and double brackets [[ ... ]] in Bash?", "a": "[ ... ] is an alias for the POSIX test utility where variable expansion requires quotes to prevent word-splitting and pathname expansion. [[ ... ]] is a modern Bash keyword with built-in regex matching (=~), no word-splitting, and direct logical operators (&&, ||)."}, {"q": "What is the time and space complexity of palindrome checking using rev?", "a": "The rev utility reads the string of length L, reverses characters in O(L) time and O(L) auxiliary memory, and the string comparison takes O(L) time. Overall time complexity is linear O(L)."}], "3": [{"q": "Why is sort -n used instead of standard sort?", "a": "Standard sort performs lexicographical (ASCII character code) sorting, where '10' appears before '2' because '1' < '2'. The -n flag enforces numerical comparison, correctly ordering negative numbers, zero, and multi-digit values (e.g. -3, 0, 5, 7, 12)."}, {"q": "How does Bash handle negative array indices like ${s[-1]}?", "a": "In Bash 4.2+, negative indexing accesses array elements from the end: ${s[-1]} references the last element. In older versions (like macOS default Bash 3.2), it can be written portably as ${s[${#s[@]}-1]}."}, {"q": "What does the -a flag in read -a do?", "a": "The -a option instructs read to split the typed input line on space/delimiter boundaries and assign the resulting words into sequential indices of an indexed array."}], "4": [{"q": "What does the -n option do in grep -n?", "a": "The -n option prefixes each matching line in the output with its 1-based line number in the source file, which helps developers locate patterns quickly."}, {"q": "How does the || operator work in grep -n \"$s\" \"$f\" || echo \"Not found\"?", "a": "|| is the logical OR operator in Bash. The right-hand side executes only if the left-hand side fails (returns a non-zero exit status). When grep finds zero matching lines, it exits with status 1, which triggers echo 'Not found'."}, {"q": "What are the standard exit codes returned by grep?", "a": "Exit code 0: At least one matching line was found. Exit code 1: No match was found. Exit code 2+: An error occurred (such as file not found or permission denied)."}], "5": [{"q": "Why is 1 subtracted when counting directories with find?", "a": "find $d -maxdepth 1 -type d lists all directories within $d, including the target directory $d itself ('.'). Subtracting 1 removes the parent folder from the count, leaving only true subdirectories."}, {"q": "What does ${1:-.} parameter expansion mean?", "a": "It provides a default parameter value: if positional argument $1 is unset or empty, it evaluates to . (the current directory); otherwise, it evaluates to the value of $1."}, {"q": "What is the difference between -type f and -executable in find?", "a": "-type f restricts results strictly to regular files (ignoring directories, symlinks, FIFOs, sockets). -executable filters those files to only those having execute permissions for the current user."}], "6": [{"q": "What are the common Unix file test operators in Bash?", "a": "-f checks for regular files; -d checks for directories; -e checks if a file/path exists; -s checks if a file is non-empty; -L checks for symbolic links; -x checks execute permissions; -b and -c check for block/character devices."}, {"q": "What falls under 'Something else' when checking with -e after -f and -d?", "a": "Any non-regular and non-directory filesystem entry, such as symbolic links, block devices (disks), character devices (/dev/null, terminal), named pipes (FIFOs), and Unix domain sockets."}, {"q": "What is an inode in Unix filesystems?", "a": "An inode (index node) is a filesystem metadata data structure that stores file type, access permissions, owner, group, file size, timestamps, and data block pointers. The filename is stored separately in directory data."}], "7": [{"q": "What does ${1%.c} do in Bash parameter expansion?", "a": "The % operator removes the shortest matching suffix from the value of $1. If $1 is 'hello.c', ${1%.c} strips '.c' to produce 'hello', allowing the executable name to match the C source basename."}, {"q": "What are the 4 fundamental stages of C compilation performed by gcc?", "a": "1. Preprocessing (cpp: expands #include, #define macros, strips comments); 2. Compilation (cc1: translates preprocessed C into assembly language); 3. Assembly (as: translates assembly into machine code object file .o); 4. Linking (ld: links object files and libraries into an ELF executable binary)."}, {"q": "Why is chmod +x used on the compiled output?", "a": "While gcc sets execute bits automatically on successful builds, explicit chmod +x ensures execute permissions are granted even under restrictive umask environments before running ./${1%.c}."}], "8": [{"q": "How does GNU sed '2~2d' work?", "a": "In GNU sed, the address format first~step matches every step-th line starting at first. '2~2d' matches lines 2, 4, 6, 8, ... and the 'd' command deletes them."}, {"q": "What does the -i flag in sed do?", "a": "The -i flag performs in-place file editing. It creates a temporary file with the changes and renames it over the original file, modifying the file directly on disk instead of writing to stdout."}, {"q": "How would you delete all odd-numbered lines instead?", "a": "Using sed -i '1~2d' \"$1\", which starts at line 1 and deletes every 2nd line (lines 1, 3, 5, 7, ...)."}], "9": [{"q": "How does awk 'seen[$1]++{print $2}' identify duplicates?", "a": "awk maintains an associative hash map 'seen'. For the first occurrence of hash $1, seen[$1] is 0 (evaluates to false), and it increments to 1 without printing. For duplicate files with the identical hash, seen[$1] is >= 1 (evaluates to true), so print $2 outputs the duplicate file name."}, {"q": "What is the purpose of xargs -r?", "a": "The -r (--no-run-if-empty) flag instructs xargs not to execute the target command (rm -v) if standard input is empty, preventing 'rm: missing operand' errors when no duplicates exist."}, {"q": "Why is MD5 checksum used instead of comparing file names or file sizes?", "a": "Duplicate files often have different names (e.g. report.pdf and report_copy.pdf). File sizes can match by coincidence between completely different files. Cryptographic checksums like MD5 generate an identical digest if and only if the byte contents are identical."}], "10": [{"q": "What is the Convoy Effect in FCFS scheduling?", "a": "The Convoy Effect occurs when a long CPU-burst process runs first, forcing multiple short, I/O-bound processes to wait behind it in the ready queue. This severely degrades CPU and I/O device utilization and inflates average waiting time."}, {"q": "How are Turnaround Time (TAT) and Waiting Time (WT) defined and computed?", "a": "Turnaround Time (TAT) is the total elapsed time from process arrival to process completion: TAT = Completion Time - Arrival Time. Waiting Time (WT) is the total time the process spent waiting in the ready queue: WT = Turnaround Time - Burst Time."}, {"q": "Can FCFS cause starvation? Why or why not?", "a": "No, FCFS is strictly starvation-free. Because processes are scheduled in exact order of arrival, every process in the ready queue is guaranteed to be executed once earlier processes terminate."}], "11": [{"q": "Why is Shortest Job First (SJF) mathematically optimal for waiting time?", "a": "SJF minimizes the sum of waiting times because executing short jobs first allows them to complete early and exit the system, reducing the remaining queue length and accumulated wait times for all other jobs."}, {"q": "Can SJF suffer from starvation? How is it resolved?", "a": "Yes. If there is a continuous arrival of short-burst processes, longer-burst processes may be postponed indefinitely (starvation). This is solved using 'Aging', which gradually increments the priority of waiting processes over time."}, {"q": "Why cannot pure SJF be implemented directly in general-purpose OS schedulers?", "a": "In real-world operating systems, the exact future CPU burst duration of a process cannot be known in advance. Schedulers must estimate future bursts using exponential moving averages of previous bursts: \u03c4_{n+1} = \u03b1 t_n + (1-\u03b1) \u03c4_n."}], "12": [{"q": "How does SRTN differ from non-preemptive SJF?", "a": "In SRTN (Shortest Remaining Time Next), if a new process arrives with a CPU burst shorter than the remaining burst time of the currently running process, the CPU is immediately preempted and allocated to the newly arrived process."}, {"q": "What is the primary overhead of SRTN compared to SJF?", "a": "SRTN incurs context-switch overhead due to frequent preemptions whenever shorter jobs arrive. Context switching requires saving registers, updating memory mappings, and invalidating CPU caches."}, {"q": "What happens if a newly arrived job has remaining time equal to the currently executing job?", "a": "Standard convention retains the currently running process to avoid an unnecessary context switch."}], "13": [{"q": "What is Priority Inversion and how is it resolved?", "a": "Priority Inversion happens when a low-priority process holds a mutual-exclusion resource required by a high-priority process, while a medium-priority process runs and preempts the low-priority process, indirectly starving the high-priority process. It is resolved using Priority Inheritance Protocol, where the lock holder temporarily inherits the high priority."}, {"q": "What is Aging in priority scheduling?", "a": "Aging is a technique where an operating system periodically increases the priority of processes that spend a long time waiting in the ready queue, preventing indefinite starvation of low-priority processes."}, {"q": "What convention is standard for priority numbers in operating systems?", "a": "In Unix and POSIX nice levels, smaller numerical values represent higher priority (e.g. priority 0 is higher than priority 10). In Windows, higher numbers represent higher priorities."}], "14": [{"q": "When does scheduling take place in non-preemptive priority scheduling?", "a": "Scheduling decisions occur only when the currently executing process either voluntarily yields the CPU, performs an I/O operation, or terminates. An arriving higher-priority process must wait in the ready queue until the running burst finishes."}, {"q": "What is the difference between Waiting Time and Response Time?", "a": "Waiting Time is the cumulative time a process spends waiting in the ready queue throughout its entire lifecycle. Response Time is the elapsed time from process arrival until its very first execution on the CPU."}], "15": [{"q": "What is context-switch overhead and what actions are taken during it?", "a": "Context switching is the administrative time taken by the OS to save the CPU state (program counter, registers, stack pointer) of the current process into its Process Control Block (PCB) and load the saved state of the next scheduled process. The CPU does no useful application work during this period."}, {"q": "How does the size of time quantum q affect Round Robin?", "a": "If q is too small, context-switch overhead dominates and CPU throughput degrades severely. If q is too large (larger than the maximum process burst), Round Robin degrades into First-Come First-Served (FCFS)."}, {"q": "What is the rule of thumb for selecting the time quantum q?", "a": "The time quantum should be chosen such that approximately 75% to 80% of CPU bursts are shorter than q, balancing responsiveness with low context-switch overhead."}], "16": [{"q": "Where does a preempted process get placed when a new process arrives at the same time tick?", "a": "Standard operating system convention adds the newly arriving process to the tail of the ready queue first, and then appends the preempted process behind it."}, {"q": "Why is Round Robin preferred for time-sharing operating systems?", "a": "Round Robin guarantees bounded response time: each of n processes gets at least 1/n of the CPU time in slices of at most q time units, preventing starvation and providing interactive responsiveness."}], "17": [{"q": "What are the 5 major CPU scheduling evaluation criteria?", "a": "1. CPU Utilization (percentage of time CPU is active); 2. Throughput (number of processes completed per unit time); 3. Turnaround Time (time from submission to completion); 4. Waiting Time (time spent in ready queue); 5. Response Time (time from submission to first response)."}, {"q": "What is the difference between CPU-bound and I/O-bound processes?", "a": "CPU-bound processes spend the majority of their time performing intensive computations and require long CPU bursts. I/O-bound processes spend most of their time waiting for I/O operations and require frequent but very short CPU bursts."}], "18": [{"q": "What is the difference between Multilevel Queue (MLQ) and Multilevel Feedback Queue (MLFQ)?", "a": "In Multilevel Queue (MLQ), processes are permanently assigned to a specific queue (e.g. system vs user) and cannot change queues. In Multilevel Feedback Queue (MLFQ), processes dynamically migrate between queues with different priorities and time quanta based on observed burst behavior."}, {"q": "Why are system processes given a separate, higher-priority queue than user processes?", "a": "System processes handle kernel tasks, device interrupts, page faults, and critical services that maintain overall OS stability and responsiveness; delaying them stalls user applications."}], "19": [{"q": "What is the difference between a Safe State and an Unsafe State in Banker's Algorithm?", "a": "A state is safe if there exists at least one sequence of process allocations <P1, P2, ... Pn> such that each process can satisfy its maximum resource claims and finish. An unsafe state is NOT necessarily deadlocked, but deadlock cannot be guaranteed to be avoided if processes claim their maximum resources."}, {"q": "What is the formula for the Need matrix in Banker's Algorithm?", "a": "Need[i][j] = Max[i][j] - Allocation[i][j], which represents the remaining resources process i may request before completing."}, {"q": "What is the time complexity of the safety algorithm in Banker's Algorithm?", "a": "The time complexity is O(m * n^2), where n is the number of processes and m is the number of resource types."}], "20": [{"q": "What are Coffman's four necessary conditions for deadlock?", "a": "1. Mutual Exclusion (resources cannot be shared); 2. Hold and Wait (processes hold allocated resources while requesting others); 3. No Preemption (resources cannot be forcibly taken); 4. Circular Wait (a circular chain of processes where each holds a resource requested by the next)."}, {"q": "What is the difference between Deadlock Avoidance and Deadlock Detection?", "a": "Deadlock Avoidance (e.g. Banker's Algorithm) inspects resource requests before granting them to ensure the system never enters an unsafe state. Deadlock Detection periodically checks allocation and request matrices after granting resources to identify if any deadlock currently exists."}, {"q": "What recovery strategies can an OS use once a deadlock is detected?", "a": "1. Process termination (terminate all deadlocked processes or abort one process at a time until the deadlock cycle is broken); 2. Resource preemption (preempt resources from selected victim processes and roll them back to a checkpointed safe state)."}], "21": [{"q": "What three criteria must every valid solution to the critical section problem satisfy?", "a": "1. Mutual Exclusion (at most one process can execute inside the critical section at any time); 2. Progress (if no process is in the critical section, only processes wishing to enter can participate in deciding who enters next, and this decision cannot be postponed indefinitely); 3. Bounded Waiting (a limit exists on the number of times other processes enter the critical section after a process has requested entry)."}, {"q": "What is the role of the 'turn' variable in Dekker's Algorithm?", "a": "When both processes set their intention flags (f0=1 and f1=1) simultaneously, the turn variable breaks the symmetry by designating which process has priority, forcing the other process to temporarily withdraw its flag and wait."}, {"q": "What is busy waiting / spinlocking and what is its disadvantage?", "a": "Busy waiting means a process repeatedly executes a loop testing a condition until it becomes true. Its major drawback is that it wastes CPU cycles that could otherwise be allocated to productive processes."}], "22": [{"q": "How does acquiring the lower-numbered fork first eliminate deadlock in Dining Philosophers?", "a": "It establishes a strict global resource ordering. Because philosopher 4 must pick fork 0 before fork 4, a circular wait chain (P0->F1->P1->F2->...->F0->P0) is impossible, mathematically breaking Coffman's circular wait condition."}, {"q": "Which of Coffman's 4 conditions is broken by resource ordering?", "a": "Circular Wait. In a strictly ordered resource hierarchy, a cycle of dependencies cannot exist in the resource allocation graph."}, {"q": "Can starvation still occur in Dining Philosophers even if deadlock is prevented?", "a": "Yes. If philosophers 1 and 3 alternate eating continuously, philosopher 2 (who sits between them) may be starved indefinitely from ever obtaining both adjacent forks at the same time."}], "23": [{"q": "Why are two counting semaphores (empty and full) needed in the bounded-buffer problem?", "a": "The 'empty' semaphore tracks remaining vacant slots (initialized to buffer capacity N); it blocks the producer when the buffer is full. The 'full' semaphore tracks available produced items (initialized to 0); it blocks the consumer when the buffer is empty."}, {"q": "Why must wait(empty) precede wait(mutex) in the producer to prevent deadlock?", "a": "If the producer acquired mutex first and then blocked on wait(empty) when the buffer is full, it would hold the mutex while sleeping, preventing the consumer from ever entering the critical section to consume an item and signal empty, creating an immediate deadlock."}, {"q": "Why was exec 3<>e used with named pipes (mkfifo) in the shell script?", "a": "Opening a FIFO normally blocks until both a reader and writer open it. Using '<>' opens the FIFO descriptor for both reading and writing simultaneously within the current shell process, preventing it from blocking on open."}]}
+</script>
+
+<div id="tip"></div>
+
+<script>
+const G=`read :: Built-in command. It waits for you to type a line and stores it. "read n" stores the whole line in n. "read a b" splits the line on spaces: first word into a, the rest into b.
+read -p :: -p "text" prints that text as a prompt before waiting for your input (the prompt only appears when you type at a keyboard).
+read -a :: -a name stores every typed word as one element of an array. Typing 5 9 2 gives name[0]=5, name[1]=9, name[2]=2.
+read -u :: -u N reads the line from file descriptor N instead of the keyboard. Here N is a pipe, so read WAITS until something is written into it. That waiting is how the semaphore blocks.
+echo :: Prints its arguments followed by a newline. With > or >> the text goes into a file (or pipe) instead of the screen.
+for :: Starts a loop. C-style for ((i=1;i<=n;i++)) means: start i at 1, repeat while i<=n, add 1 after every pass. "for k in 1 2" runs once for each listed word.
+do :: Starts the loop body. Everything up to done is repeated.
+done :: Ends the loop body that began with do.
+while :: Repeats the body as long as the test after it succeeds (exit status 0 = true).
+if :: Runs the commands after then when the test succeeds. Use [ ] for file and text tests, (( )) for number tests.
+then :: Starts the commands that run when the if/elif test is true.
+elif :: Means else-if. It is tried only when the earlier tests failed.
+else :: Runs when every earlier test failed.
+fi :: Ends an if block (if spelled backwards).
+case :: case WORD in pattern) commands;; esac works like switch in C: it runs the branch whose pattern matches WORD.
+esac :: Ends a case block (case spelled backwards).
+in :: Introduces the list in "for x in list" or the patterns in "case x in".
+continue :: Skips the rest of this loop pass and starts the next one (the loop step such as i++ still runs).
+wait :: Pauses the script until all background jobs (started with &) have finished.
+sleep :: Pauses for the given number of seconds, so you can watch the order of events.
+exec :: With only redirections (exec 3>file) it opens file descriptors for the rest of the shell, so later commands such as flock 3 or echo >&3 can use them.
+flock :: Locks a file (given by descriptor). If another process holds the lock, flock waits until it is released. It acts like a mutex or semaphore.
+flock -u :: -u unlocks the descriptor, so a waiting process can continue.
+mkfifo :: Creates a named pipe (FIFO), a special file where one process writes and another reads. A read waits until data arrives.
+tail :: Prints the end of a file.
+tail -n :: -n1 means only the last 1 line. Here it gives the current value of a shared variable stored in a file.
+grep :: Searches text for a pattern and prints matching lines. It fails (exit status 1) when nothing matches, which lets || run the Not found message.
+grep -n :: -n puts the line number in front of each match.
+sed :: Stream editor that changes text line by line.
+sed -i :: -i edits the file itself (in place) instead of printing the changed text.
+find :: Walks through a directory and lists the items that pass its tests.
+find -maxdepth :: -maxdepth 1 looks only in this folder, not in sub-folders.
+find -type :: -type f keeps regular files only. -type d keeps directories only.
+find -executable :: Keeps only files you are allowed to run.
+wc :: Word count tool: counts lines, words or characters of its input.
+wc -l :: -l counts lines.
+wc -w :: -w counts words.
+sort :: Sorts lines. Without options it sorts as text.
+sort -n :: -n sorts as numbers, so 9 comes before 10.
+rev :: Reverses each line character by character: abc becomes cba.
+printf :: Formatted print. %s is a text slot, \\n is a new line, %.2f prints a decimal with 2 digits. printf "%s\\n" a b c prints each item on its own line.
+awk :: A small text-processing language. BEGIN{...} runs once before any input, so here it just does the division and prints with printf.
+awk -v :: -v name=value hands a shell value to awk as a variable (T, W and n here).
+md5sum :: Prints a fingerprint (hash) of each file's content. Equal content gives equal hash, so duplicates are easy to spot.
+xargs :: Takes the lines coming through the pipe and passes them as arguments to the command after it.
+xargs -r :: -r means do nothing if the input is empty.
+rm :: Deletes files.
+rm -v :: -v (verbose) prints each file name as it is deleted.
+gcc :: The C compiler. gcc a.c -o a turns a.c into the program a.
+gcc -o :: -o NAME sets the name of the output program.
+chmod :: Changes file permissions. +x adds the permission to execute.
+fin :: Function we defined. It receives the process number ($1) and its finish time ($2), works out turnaround and waiting time, prints them and adds them to the totals.
+add :: Function we defined. It puts every process that has arrived by now, and is not queued yet, at the back of the ready queue.
+phil :: Function we defined: what one philosopher does (take forks, eat, put forks down).
+producer :: Function we defined: makes items and puts them into the buffer.
+consumer :: Function we defined: takes items out of the buffer.
+: :: The do-nothing command (always succeeds). Used as an empty loop body so the while keeps polling.
+[t :: Opens a test. [ -f x ] checks a file, [ "$a" = "$b" ] compares text. It must have a space after [ and before ]. Success means true.
+]t :: Closes a [ ] test.
+[i :: Starts an array index: a[i] is element number i of array a (counting starts at 0).
+]i :: Ends an array index.
+[ -f :: -f is true when the name is a regular file.
+[ -d :: -d is true when the name is a directory.
+[ -e :: -e is true when the name exists at all.
+[ -z :: -z is true when the text is empty.
+(( :: Starts arithmetic. Inside, variables need no $, = assigns, < > == compare, and the result is true when it is not zero.
+)) :: Ends an arithmetic block.
+$(( :: Arithmetic expansion: it calculates and the number replaces it. echo $((3+4)) prints 7.
+$( :: Command substitution: runs the command inside and its output replaces it as text.
+( :: Parenthesis. In arithmetic it sets the order of calculation. In name=( ... ) it makes an array.
+) :: Closing parenthesis for ( ... ), $( ... ), or the end of a case pattern such as 1) .
+() :: After a name, name(){ ... } defines a function that can be called by that name.
+{ :: Starts a group of commands { a; b; } that act as one unit. Also starts a function body.
+} :: Ends a group of commands or function body.
+&& :: AND-then. The right side runs only if the left side succeeded (true).
+|| :: OR-else. The right side runs only if the left side failed (false).
+| :: Pipe. The output of the left command becomes the input of the right command.
+> :: Redirects output into a file and overwrites it. N>file opens descriptor N on that file.
+>> :: Appends output to the end of a file without erasing it.
+< :: Takes input from a file or descriptor instead of the keyboard. Inside (( )) it means less-than.
+<<< :: Here-string: the text on its right is fed to the command on its left as input.
+<> :: Opens a file or pipe for reading AND writing. For a pipe this means opening never blocks.
+& :: At the end of a command it starts that command in the background, so the script continues at once.
+>& :: In echo >&3, it sends the output to descriptor 3 instead of the screen.
+; :: Separates commands on one line, like pressing Enter.
+;; :: Ends one branch of a case.
+! :: NOT. !x is true when x is 0.
+!= :: Not equal.
+== :: Equal (comparison inside (( )) ).
+<= :: Less than or equal.
+>= :: Greater than or equal.
+++ :: Adds 1 (t++ means t=t+1).
+-- :: Subtracts 1. In --r[m] the subtraction happens first and the new value is used.
++= :: Add and assign: t+=5 means t=t+5. With ( ) it appends to an array: Q+=($j).
+-= :: Subtract and assign: r[i]-=x means r[i]=r[i]-x.
+= :: Assignment (a=5, no spaces around it) or, inside [ ], text comparison.
+% :: Remainder after division: 17%5 is 2. n%i==0 means i divides n exactly.
+? :: Ternary operator: condition ? valueIfTrue : valueIfFalse.
+* :: Multiply inside (( )). Outside it is a wildcard meaning every file in this folder.
++ :: Add.
+, :: Comma. Inside (( )) it separates several calculations that run one after another, left to right.
+- :: Subtract.
+/ :: Divide inside (( )), or the separator in a path such as ./hello.
+. :: The current folder. ./hello runs the program hello from here.
+~ :: Inside the sed text it means every Nth line, counting from the first number.
+2>/dev/null :: Sends error messages (descriptor 2) to /dev/null, a bin that discards everything, so they stay hidden.
+"str :: Text in double quotes stays together as ONE word even with spaces, and any $name inside is replaced by its value.
+" :: Double quote. Quotes keep a value as one word even if it has spaces. Variables inside are still expanded.
+'2~2d' :: sed program in single quotes (nothing inside is expanded). 2~2 means start at line 2 and take every 2nd line, d means delete it. So all even lines are deleted.
+'seen[$1]++{print $2}' :: awk program. seen[$1] counts how many times this hash (column 1) appeared. ++ adds 1 after reading the old value, so the first time the value is 0 (false) and nothing prints. Next times it is true and column 2 (the file name) is printed.
+awkB :: awk program in single quotes. BEGIN runs once, divides the totals by n and prints both averages with 2 decimals.
+v:n :: Count of how many processes (or numbers) the program works with.
+v:i|j|k :: Loop counter variables. Usually i is the process number.
+v:t :: Time: the CPU clock (current time unit) in the scheduling programs.
+v:a :: Arrival times: a[i] is when process i arrives. In question 3 it holds the typed numbers.
+v:b :: Burst times: b[i] is how long process i needs the CPU.
+v:r :: Remaining time of each process (scheduling), or the right fork number in question 22.
+v:p :: Priority of each process (smaller number = higher priority). In Dekker's program p is the process function.
+v:q :: The time quantum for Round Robin, or the queue number of each process in the multilevel queue.
+v:cs :: Context-switch time: time lost each time the CPU changes process.
+v:m :: Number of the process chosen to run next (0 means none chosen).
+v:d :: d[i] is 1 once process i has finished (done flag).
+v:s :: Helper: a typed string, a sorted array, or an already-queued flag, depending on the program.
+v:T|W :: Running totals of turnaround time (T) and waiting time (W) used for the averages. In Banker's, W is the Work/Available vector.
+v:tat :: Turnaround time = finish time minus arrival time.
+v:wt :: Waiting time = turnaround time minus burst time.
+v:Q :: The ready queue (an array). The process at the front runs next.
+v:cur :: The process running right now (0 means CPU idle).
+v:left :: How many processes have not finished yet.
+v:c :: Menu choice (question 17) or the pass counter (Banker's).
+v:x :: How long the process runs in this turn: the smaller of quantum and remaining time.
+v:v :: The sort key of one process (arrival, burst, remaining time or priority).
+v:best :: The smallest key found so far.
+v:l :: Left fork number (the lower-numbered fork after swapping).
+v:o|me :: me is this process number (0 or 1) and o is the other one (Dekker's).
+v:f :: Finished flags (Banker's), or a pipe/file name.
+v:e :: Pipe that counts empty slots in the buffer.
+v:A :: Allocation table (flat array: A[i*m+j] is process i, resource j).
+v:M :: Max table (flat array).
+v:R :: Request table (flat array).
+v:ok :: 1 while the process can still run with the available resources.
+v:g :: Function that reads the last line of a file (Dekker's program).
+v:turn|f0|f1 :: Files used as shared variables in Dekker's algorithm.
+v:fork :: Prefix of the file names used as forks (fork0 ... fork4).
+v:hello :: The C program file.
+v:buf :: Name of the shared buffer.
+v:null|dev :: Part of /dev/null, the discard file.
+v:Philosopher|Produced|Consumed :: Plain text that is printed.`;
+</script>
+
+<script>
+// Core Application Logic
+const $ = id => document.getElementById(id);
+const esc = s => (s||'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+// Parse Questions from #d
+const D = $('d').textContent.split(/^@@ ?/m).filter(b => b.trim()).map(b => {
+  const L = b.split('\n');
+  const [g, t, v] = L[0].split('|').map(s => s.trim());
+  const code = [], notes = [];
+  L.slice(1).forEach(l => {
+    if (!l.trim()) return;
+    const [c, n] = l.split(' #@ ');
+    code.push(c);
+    notes.push((n || '').trim());
+  });
+  return { g, t, v: v || '', code, notes };
+});
+
+const OUT = JSON.parse($('o').textContent);
+const VIVA = JSON.parse($('viva-data').textContent);
+
+// State
+let cur = 0;
+let st = -1;
+let currentTab = 'script';
+let categoryFilter = 'all';
+let practiceMode = false;
+let explainMode = false;
+let showCommentsInScript = false;
+let EX = [];
+
+// Local Storage Keys
+const THEME_KEY = 'oslab_theme';
+const MASTER_KEY = 'oslab_mastered';
+const NOTEBOOK_KEY = 'oslab1';
+
+// Mastered tracking
+function getMastered() {
+  try { return JSON.parse(localStorage.getItem(MASTER_KEY)) || {}; } catch(e) { return {}; }
+}
+function toggleMastered(idx) {
+  const m = getMastered();
+  m[idx + 1] = !m[idx + 1];
+  localStorage.setItem(MASTER_KEY, JSON.stringify(m));
+  updateProgressUI();
+  renderNav();
+  renderCurrentQuestion();
+}
+function isMastered(idx) {
+  return !!getMastered()[idx + 1];
+}
+function updateProgressUI() {
+  const m = getMastered();
+  const count = Object.values(m).filter(Boolean).length;
+  $('m-count').textContent = count;
+  $('m-fill').style.width = Math.round((count / D.length) * 100) + '%';
+}
+
+// Theme Handling
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+}
+initTheme();
+
+// Build Nav
+function renderNav() {
+  const q = ($('sq')?.value || '').toLowerCase();
+  const m = getMastered();
+  let h = '';
+  let lg = '';
+
+  D.forEach((d, i) => {
+    const qNum = i + 1;
+    const matchesCat = categoryFilter === 'all' || 
+      (categoryFilter === 'mastered' ? m[qNum] : d.g === categoryFilter);
+    const matchesSearch = !q || (d.t + ' ' + d.code.join(' ') + ' ' + d.notes.join(' ')).toLowerCase().includes(q);
+    
+    if (!matchesCat || !matchesSearch) return;
+
+    if (d.g !== lg) {
+      h += `<h4>${esc(d.g)}</h4>`;
+      lg = d.g;
+    }
+    
+    const masteredIcon = m[qNum] ? '⭐' : '';
+    const activeClass = i === cur ? 'on' : '';
+    h += `<a href="#q${qNum}" class="${activeClass}" onclick="show(${i})">
+      <span><span class="q-badge">${qNum}</span>${esc(d.t.replace(/^\\d+\\.\\s*/, ''))}</span>
+      <span class="nav-status">${masteredIcon}</span>
+    </a>`;
+  });
+
+  if (!h) {
+    h = `<p class="say" style="text-align:center;color:var(--mut)">No matching questions found.</p>`;
+  }
+  $('nav-list').innerHTML = h;
+}
+
+function setCategoryFilter(cat, elem) {
+  categoryFilter = cat;
+  document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
+  elem.classList.add('active');
+  renderNav();
+}
+
+function filterQuestions() {
+  renderNav();
+}
+
+// Main Render Function
+function show(i) {
+  cur = i;
+  st = -1;
+  renderNav();
+  renderCurrentQuestion();
+  updateProgressUI();
+  window.location.hash = '#q' + (i + 1);
+  window.scrollTo(0, 0);
+}
+
+function renderCurrentQuestion() {
+  const d = D[cur];
+  const qNum = cur + 1;
+  const mastered = isMastered(cur);
+
+  const main = $('main');
+  main.innerHTML = `
+    <div class="card">
+      <div class="q-header">
+        <div class="q-title-group">
+          <div><span class="q-tag">${esc(d.g)}</span> <small style="color:var(--mut);margin-left:8px">Question ${qNum} of ${D.length}</small></div>
+          <h2>${esc(d.t)}</h2>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="master-btn ${mastered ? 'mastered' : ''}" onclick="toggleMastered(${cur})">
+            <span>${mastered ? '⭐ Mastered' : '☆ Mark as Mastered'}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="tab-bar">
+        <button class="tab-btn ${currentTab==='script'?'active':''}" onclick="switchTab('script')">💻 Script & Notes</button>
+        <button class="tab-btn ${currentTab==='sim'?'active':''}" onclick="switchTab('sim')">⚡ Interactive Playground</button>
+        ${d.v ? `<button class="tab-btn ${currentTab==='viz'?'active':''}" onclick="switchTab('viz')">📊 Visualizer</button>` : ''}
+        <button class="tab-btn ${currentTab==='viva'?'active':''}" onclick="switchTab('viva')">🎓 Exam Viva Q&A</button>
+        <button class="tab-btn ${currentTab==='practice'?'active':''}" onclick="switchTab('practice')">📝 Practice Mode</button>
+        <button class="tab-btn ${currentTab==='quiz'?'active':''}" onclick="switchTab('quiz')">🎯 Quick Quiz</button>
+      </div>
+
+      <!-- Tab 1: Script & Notes -->
+      <div class="tab-pane ${currentTab==='script'?'active':''}" id="tab-script">
+        <div class="code-header">
+          <span>bash shell script · <strong>q${qNum}.sh</strong></span>
+          <div class="code-actions">
+            <button onclick="toggleTerminalRun()" style="background:#16a34a;color:#fff;font-weight:700;box-shadow:0 2px 6px rgba(22,163,74,0.3)">▶ Run Script</button>
+            <button class="btn-subtle" onclick="toggleComments()">${showCommentsInScript ? '⚡ Concise Script' : '💬 Documented Script'}</button>
+            <button class="btn-subtle" onclick="toggleExplainMode()" id="xb">${explainMode ? 'Explain: ON' : 'Explain: OFF'}</button>
+            <button class="btn-subtle" onclick="downloadCurrentScript()">💾 Download .sh</button>
+            <button class="btn-sec" onclick="copyCurrentScript(this)">📋 Copy Script</button>
+          </div>
+        </div>
+        <pre class="code-block" id="cpre">${renderCodeLines(d)}</pre>
+        <div id="xcard" class="card" style="display:${explainMode ? 'block' : 'none'};margin-top:12px"></div>
+
+        <!-- Live Script Execution Terminal (Shown on Click of ▶ Run Script) -->
+        <div id="live-runner" class="card" style="display:none;background:#0b0f17;border:1px solid #1e293b;color:#f1f5f9;margin:14px 0;padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #1e293b;padding-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#ef4444"></span>
+              <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#f59e0b"></span>
+              <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#22c55e"></span>
+              <strong style="color:#38bdf8;font-family:ui-monospace,Menlo,monospace;margin-left:8px">bash q${qNum}.sh · Live Execution Terminal</strong>
+            </div>
+            <button class="btn-subtle" onclick="$('live-runner').style.display='none'" style="color:#94a3b8">✕ Close</button>
+          </div>
+          <div id="runner-controls" style="margin-bottom:12px"></div>
+          <pre id="runner-term" style="margin:0;padding:14px;background:#030712;border-radius:8px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;color:#86efac;white-space:pre-wrap;border:1px solid #111827;min-height:60px"></pre>
+        </div>
+
+        <div style="margin:16px 0 12px;display:flex;justify-content:space-between;align-items:center">
+          <strong>Step-by-Step Walkthrough</strong>
+          <div>
+            <button class="btn-sec" onclick="step(-1)">◀ Back</button>
+            <button class="btn-sec" onclick="step(1)">Next ▶</button>
+          </div>
+        </div>
+        <div class="say" id="say">Press Next ▶ to highlight each line and understand its exact role.</div>
+
+        <h3 style="font-size:16px;margin:20px 0 10px">Line-by-Line Breakdown</h3>
+        <ol style="padding-left:20px;margin:0">
+          ${d.code.map((c, k) => d.notes[k] ? `
+            <li style="margin-bottom:10px">
+              <code>${esc(c)}</code><br>
+              <span style="color:var(--mut);font-size:13.5px">${esc(d.notes[k])}</span>
+            </li>` : '').join('')}
+        </ol>
+
+        <!-- Sample Run -->
+        ${renderSampleRun(qNum)}
+      </div>
+
+      <!-- Tab 2: Interactive Playground -->
+      <div class="tab-pane ${currentTab==='sim'?'active':''}" id="tab-sim">
+        ${renderInteractivePlayground(cur)}
+      </div>
+
+      <!-- Tab 3: Visualizer -->
+      ${d.v ? `
+      <div class="tab-pane ${currentTab==='viz'?'active':''}" id="tab-viz">
+        <div id="viz-content"></div>
+      </div>` : ''}
+
+      <!-- Tab 4: Viva Voce Q&A -->
+      <div class="tab-pane ${currentTab==='viva'?'active':''}" id="tab-viva">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <p style="margin:0;color:var(--mut);font-size:13.5px">Essential oral exam viva questions asked by university lab examiners with verified technical explanations.</p>
+          <button class="btn-sec" onclick="toggleAllViva()">Toggle All Answers</button>
+        </div>
+        <div id="viva-list">
+          ${renderVivaQuestions(qNum)}
+        </div>
+      </div>
+
+      <!-- Tab 5: Practice Mode -->
+      <div class="tab-pane ${currentTab==='practice'?'active':''}" id="tab-practice">
+        ${renderPracticeCard()}
+      </div>
+
+      <!-- Tab 6: Quiz -->
+      <div class="tab-pane ${currentTab==='quiz'?'active':''}" id="tab-quiz">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <strong>Test Your Recall: Match the line</strong>
+          <button onclick="initQuiz()">🎲 New Question</button>
+        </div>
+        <p id="qq" style="font-size:15px;font-weight:600;margin:6px 0 12px"></p>
+        <pre id="qp" class="code-block" style="padding:10px 0"></pre>
+        <p id="qr" class="say" style="font-size:14px;min-height:36px;padding:8px 12px"></p>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      ${cur > 0 ? `<button class="btn-sec" onclick="show(${cur-1})">◀ Previous: ${esc(D[cur-1].t.replace(/^\\d+\\.\\s*/, ''))} ([)</button>` : '<div></div>'}
+      ${cur < D.length - 1 ? `<button onclick="show(${cur+1})">Next: ${esc(D[cur+1].t.replace(/^\\d+\\.\\s*/, ''))} (]) ▶</button>` : '<div></div>'}
+    </div>
+  `;
+
+  if (currentTab === 'viz' && d.v) {
+    initVisualizer(d.v);
+  } else if (currentTab === 'quiz') {
+    initQuiz();
+  } else if (currentTab === 'sim') {
+    initPlayground(cur);
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  renderCurrentQuestion();
+}
+
+// Code Renderer with Syntax Highlighter & Explain Mode Tokens
+function renderCodeLines(d) {
+  EX = [];
+  const linesToRender = showCommentsInScript 
+    ? [`#!/usr/bin/env bash`, `# ${d.t}`, ...d.code.map((c, k) => d.notes[k] ? `${c} # ${d.notes[k]}` : c)]
+    : d.code;
+
+  return linesToRender.map((c, k) => {
+    if (explainMode) {
+      return `<span class="ln">${tk(c, d.notes[k] || '')}</span>`;
+    } else {
+      return `<span class="ln">${syntaxHighlight(c)}</span>`;
+    }
+  }).join('\n');
+}
+
+// Syntax Highlighter
+function syntaxHighlight(code) {
+  if (/^\s*#/.test(code)) return `<span class="sh-com">${esc(code)}</span>`;
+  
+  let html = '';
+  let i = 0;
+  const len = code.length;
+  
+  while (i < len) {
+    const rem = code.slice(i);
+    
+    // Comments
+    if (rem.startsWith('#') && (i === 0 || /\s/.test(code[i-1]))) {
+      html += `<span class="sh-com">${esc(rem)}</span>`;
+      break;
+    }
+    
+    // Double quoted string
+    let m = rem.match(/^"([^"\\]|\\.)*"/);
+    if (m) {
+      html += `<span class="sh-str">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    // Single quoted string
+    m = rem.match(/^'[^']*'/);
+    if (m) {
+      html += `<span class="sh-str">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    // Parameter expansion ${...} or $((...))
+    m = rem.match(/^\$(\{[^}]+\}|\(\([^)]+\)\)|\([A-Za-z0-9_ -]+\))/);
+    if (m) {
+      html += `<span class="sh-var">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    // Variable $name, $1, $@, etc.
+    m = rem.match(/^\$[A-Za-z0-9_#@?*!]/);
+    if (m) {
+      html += `<span class="sh-var">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    // Keywords and shell commands
+    m = rem.match(/^(read|echo|for|while|do|done|if|then|elif|else|fi|case|esac|grep|sed|awk|find|wc|sort|xargs|rm|gcc|chmod|exec|flock|mkfifo|tail|rev|sleep|wait|printf|continue|exit|function)\b/);
+    if (m) {
+      html += `<span class="sh-kw">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    // Operators
+    m = rem.match(/^(&&|\|\||<<<|>>|<>|\|\||==|!=|<=|>=|\+=|-=|;;|\(\)|\(\(|\)\))/);
+    if (m) {
+      html += `<span class="sh-op">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    // Numbers
+    m = rem.match(/^\b\d+\b/);
+    if (m) {
+      html += `<span class="sh-num">${esc(m[0])}</span>`;
+      i += m[0].length;
+      continue;
+    }
+    
+    html += esc(code[i]);
+    i++;
+  }
+  return html;
+}
+
+function toggleComments() {
+  showCommentsInScript = !showCommentsInScript;
+  $('cpre').innerHTML = renderCodeLines(D[cur]);
+}
+
+function toggleExplainMode() {
+  explainMode = !explainMode;
+  $('xb').textContent = explainMode ? 'Explain: ON' : 'Explain: OFF';
+  $('cpre').innerHTML = renderCodeLines(D[cur]);
+  const xc = $('xcard');
+  xc.style.display = explainMode ? 'block' : 'none';
+  if (explainMode) {
+    xc.innerHTML = `<strong>Explain Mode Active</strong>
+    <p class="say" style="margin:8px 0">Hover over any keyword, variable, or operator to view its exact documentation. You can also select any code snippet with your cursor to see an instant explanation.</p>
+    <button class="btn-sec" onclick="xall()">Explain Entire Program</button>
+    <div id="xo" style="margin-top:12px"></div>`;
+  }
+}
+
+// Copy Script
+
+// Live Terminal Execution Triggered ONLY by "▶ Run Script" Click
+function toggleTerminalRun() {
+  const runner = $('live-runner');
+  if (runner.style.display === 'block') {
+    runner.style.display = 'none';
+    return;
+  }
+  runner.style.display = 'block';
+  setupRunnerControls(cur);
+  runner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+
+
+function toggleQ17Quantum(val) {
+  const wrap = $('run_q17_q_wrap');
+  if (wrap) wrap.style.display = val === '6' ? 'inline-block' : 'none';
+}
+
+function resetDefaultProcesses(qNum) {
+  const ta = $('run_sched_inp');
+  if (!ta) return;
+  if (qNum === 19) { ta.value = '5 3\n0 1 0\n2 0 0\n3 0 2\n2 1 1\n0 0 2\n7 5 3\n3 2 2\n9 0 2\n2 2 2\n4 3 3\n3 3 2'; return; }
+  if (qNum === 20) { ta.value = '5 3\n0 1 0\n2 0 0\n3 0 3\n2 1 1\n0 0 2\n0 0 0\n2 0 2\n0 0 1\n1 0 0\n0 0 2\n0 0 0'; return; }
+  if (qNum === 15) ta.value = '4 2 1\n0 5\n1 3\n2 8\n3 6';
+  else if (qNum === 16) ta.value = '4 2\n0 5\n1 3\n2 8\n3 6';
+  else if (qNum === 13 || qNum === 14) ta.value = '4\n0 5 2\n1 3 1\n2 8 3\n3 6 2';
+  else if (qNum === 18) ta.value = '4\n2 5\n1 3\n2 8\n1 6';
+  else ta.value = '4\n0 5\n1 3\n2 8\n3 6';
+}
+
+function setupRunnerControls(idx) {
+  const qNum = idx + 1;
+  const ctrl = $('runner-controls');
+  const term = $('runner-term');
+  const o = OUT[qNum] || {};
+
+  term.textContent = '$ bash q' + qNum + '.sh\nPress [ ▶ Execute ] below to run the script.';
+
+  let inputsHtml = '';
+  switch(qNum) {
+    case 1:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Enter Number: <input type="number" id="run_inp1" value="17" style="width:100px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 2:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Word or number: <input type="text" id="run_inp2" value="racecar" style="width:180px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 3:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Numbers (space-separated): <input type="text" id="run_inp3" value="5 -3 12 7 0" style="width:240px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 4:
+      inputsHtml = `
+        <label style="color:#e2e8f0;font-size:13.5px">Search String: <input type="text" id="run_inp4_s" value="apple" style="width:120px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>
+        <label style="color:#e2e8f0;font-size:13.5px;margin-left:8px">File: <input type="text" id="run_inp4_f" value="notes.txt" style="width:120px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>
+      `;
+      break;
+    case 5:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Folder path: <input type="text" id="run_inp5" value="demo" style="width:120px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 6:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Name: <input type="text" id="run_inp6" value="notes.txt" style="width:160px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 7:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Source file: <input type="text" id="run_inp7" value="hello.c" style="width:120px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 8:
+      inputsHtml = `<label style="color:#e2e8f0;font-size:13.5px">Target file: <input type="text" id="run_inp8" value="nums.txt" style="width:120px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:5px 8px"></label>`;
+      break;
+    case 17:
+      inputsHtml = `
+        <div style="width:100%;margin-bottom:8px">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+            <label style="color:#e2e8f0;font-size:13px;font-weight:600">
+              1. Choose Algorithm:
+              <select id="run_q17_algo" onchange="toggleQ17Quantum(this.value)" style="margin-left:6px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:4px 8px;font-size:13px">
+                <option value="1">1 · FCFS</option>
+                <option value="2">2 · SJF (Non-preemptive)</option>
+                <option value="3" selected>3 · SRTN (Preemptive SJF)</option>
+                <option value="4">4 · Priority (Preemptive)</option>
+                <option value="5">5 · Priority (Non-preemptive)</option>
+                <option value="6">6 · Round Robin (RR)</option>
+              </select>
+            </label>
+            <label id="run_q17_q_wrap" style="color:#e2e8f0;font-size:13px;display:none">
+              Quantum: <input type="number" id="run_q17_q" value="2" min="1" style="width:55px;background:#1e293b;color:#f8fafc;border:1px solid #475569;border-radius:6px;padding:4px 6px">
+            </label>
+            <button class="btn-subtle" onclick="resetDefaultProcesses(17)" style="color:#94a3b8;font-size:12px;margin-left:auto">↺ Reset Inputs</button>
+          </div>
+          <div style="color:#94a3b8;font-size:12px;margin-bottom:4px">
+            2. Enter Process Count, then one line per process: <code>Arrival Burst Priority</code> (you can change any number):
+          </div>
+          <textarea id="run_sched_inp" style="width:100%;height:85px;background:#1e293b;color:#86efac;border:1px solid #475569;border-radius:6px;padding:8px;font-family:monospace;font-size:13px" spellcheck="false">4\n0 5 2\n1 3 1\n2 8 3\n3 6 2</textarea>
+        </div>
+      `;
+      break;
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 18:
+      inputsHtml = `
+        <div style="width:100%;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <span style="color:#38bdf8;font-size:13px;font-weight:600">Enter Process Arrival & Burst Times (One line per process: <code>Arrival Burst</code>):</span>
+            <button class="btn-subtle" onclick="resetDefaultProcesses(${qNum})" style="color:#94a3b8;font-size:12px">↺ Reset Sample Inputs</button>
+          </div>
+          <textarea id="run_sched_inp" style="width:100%;height:80px;background:#1e293b;color:#86efac;border:1px solid #475569;border-radius:6px;padding:8px;font-family:monospace;font-size:13px" spellcheck="false">${qNum===15 ? '4 2 1\n0 5\n1 3\n2 8\n3 6' : qNum===16 ? '4 2\n0 5\n1 3\n2 8\n3 6' : qNum===13||qNum===14 ? '4\n0 5 2\n1 3 1\n2 8 3\n3 6 2' : qNum===18 ? '4\n2 5\n1 3\n2 8\n1 6' : '4\n0 5\n1 3\n2 8\n3 6'}</textarea>
+        </div>
+      `;
+      break;
+    case 19:
+      inputsHtml = `
+        <div style="width:100%;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <span style="color:#38bdf8;font-size:13px;font-weight:600">Banker's Inputs: [Processes Resources], Allocation rows, Max rows, Available vector:</span>
+            <button class="btn-subtle" onclick="resetDefaultProcesses(19)" style="color:#94a3b8;font-size:12px">↺ Reset Sample</button>
+          </div>
+          <textarea id="run_sched_inp" style="width:100%;height:110px;background:#1e293b;color:#86efac;border:1px solid #475569;border-radius:6px;padding:8px;font-family:monospace;font-size:12.5px" spellcheck="false">5 3\n0 1 0\n2 0 0\n3 0 2\n2 1 1\n0 0 2\n7 5 3\n3 2 2\n9 0 2\n2 2 2\n4 3 3\n3 3 2</textarea>
+        </div>
+      `;
+      break;
+    case 20:
+      inputsHtml = `
+        <div style="width:100%;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <span style="color:#38bdf8;font-size:13px;font-weight:600">Detection Inputs: [Processes Resources], Allocation rows, Request rows, Available vector:</span>
+            <button class="btn-subtle" onclick="resetDefaultProcesses(20)" style="color:#94a3b8;font-size:12px">↺ Reset Sample</button>
+          </div>
+          <textarea id="run_sched_inp" style="width:100%;height:110px;background:#1e293b;color:#86efac;border:1px solid #475569;border-radius:6px;padding:8px;font-family:monospace;font-size:12.5px" spellcheck="false">5 3\n0 1 0\n2 0 0\n3 0 3\n2 1 1\n0 0 2\n0 0 0\n2 0 2\n0 0 1\n1 0 0\n0 0 2\n0 0 0</textarea>
+        </div>
+      `;
+      break;
+    case 21:
+    case 22:
+    case 23:
+      inputsHtml = `<span style="color:#38bdf8;font-size:13px">Self-contained concurrent simulation · No manual inputs needed · Click ▶ Execute to run</span>`;
+      break;
+    default:
+      inputsHtml = `<span style="color:#94a3b8;font-size:13px">Self-contained executable script · Ready to execute</span>`;
+      break;
+  }
+
+  ctrl.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      ${inputsHtml}
+      <button onclick="executeTerminalRun(${qNum})" style="background:#22c55e;color:#052e16;font-weight:700;padding:6px 14px;border-radius:6px">▶ Execute</button>
+      ${qNum >= 10 && qNum <= 18 ? `<button class="btn-subtle" onclick="switchTab('viz')" style="color:#38bdf8">Open Interactive Gantt Visualizer &rarr;</button>` : ''}
+    </div>
+  `;
+}
+
+function executeTerminalRun(qNum) {
+  const term = $('runner-term');
+  const o = OUT[qNum] || {};
+
+  switch(qNum) {
+    case 1: {
+      const n = parseInt($('run_inp1')?.value, 10);
+      let isP = n >= 2;
+      for (let i = 2; i * i <= n; i++) { if (n % i === 0) { isP = false; break; } }
+      term.textContent = `$ bash q1.sh\nNumber: ${n}\n${isP ? 'Prime' : 'Not prime'}`;
+      break;
+    }
+    case 2: {
+      const s = ($('run_inp2')?.value || '').trim();
+      const isPal = s === s.split('').reverse().join('');
+      term.textContent = `$ bash q2.sh\nWord or number: ${s}\n${isPal ? 'Palindrome' : 'Not palindrome'}`;
+      break;
+    }
+    case 3: {
+      const raw = $('run_inp3')?.value || '';
+      const nums = raw.trim().split(/\s+/).map(x => parseInt(x, 10)).filter(x => !isNaN(x)).sort((a,b) => a - b);
+      term.textContent = `$ bash q3.sh\nNumbers: ${raw}\nSmallest: ${nums[0]}  Largest: ${nums[nums.length - 1]}`;
+      break;
+    }
+    case 4: {
+      const pat = $('run_inp4_s')?.value || '';
+      const f = $('run_inp4_f')?.value || 'notes.txt';
+      const lines = ["apple", "banana", "apple pie", "orange", "pineapple"];
+      const matches = lines.map((l, idx) => l.includes(pat) ? (idx+1) + ':' + l : null).filter(Boolean);
+      term.textContent = `$ bash q4.sh\nString: ${pat}\nFile: ${f}\n${matches.length ? matches.join('\n') : 'Not found'}`;
+      break;
+    }
+    case 5: {
+      const d = $('run_inp5')?.value || 'demo';
+      term.textContent = `$ bash q5.sh ${d}\nFiles: 3\nDirs: 2\nExecutables: 1`;
+      break;
+    }
+    case 6: {
+      const n = ($('run_inp6')?.value || '').trim();
+      const res = n.endsWith('/') ? 'Directory' : n.includes('.') ? 'File' : 'Does not exist';
+      term.textContent = `$ bash q6.sh\nName: ${n}\n${res}`;
+      break;
+    }
+    case 7: {
+      const f = $('run_inp7')?.value || 'hello.c';
+      const out = f.replace(/\.c$/, '');
+      term.textContent = `$ bash q7.sh ${f}\ngcc ${f} -o ${out}\nchmod +x ${out}\n./${out}\nHello OS`;
+      break;
+    }
+    case 8: {
+      const f = $('run_inp8')?.value || 'nums.txt';
+      term.textContent = `$ bash q8.sh ${f}\nsed -i '2~2d' ${f}\n$ cat ${f}\n1\n3\n5\n7`;
+      break;
+    }
+    case 9: {
+      term.textContent = `$ bash q9.sh\nremoved 'doc1_copy.pdf'\nremoved 'report_old.docx'\n$ ls\ndoc1.pdf  report.docx  image.png`;
+      break;
+    }
+    case 17: { // General Scheduler (User picks algorithm & inputs)
+      const algo = parseInt($('run_q17_algo')?.value || '3', 10);
+      const qVal = parseInt($('run_q17_q')?.value || '2', 10);
+      const raw = ($('run_sched_inp')?.value || '').trim().split('\n').map(l => l.trim()).filter(Boolean);
+      if (!raw.length) { term.textContent = 'Please enter process count and rows.'; break; }
+      
+      const n = parseInt(raw[0], 10);
+      const P = [];
+      for (let i = 1; i <= n && i < raw.length; i++) {
+        const parts = raw[i].split(/\s+/).map(Number);
+        P.push([parts[0] || 0, parts[1] || 1, parts[2] != null ? parts[2] : 1]);
+      }
+      if (!P.length) { term.textContent = 'No valid processes.'; break; }
+
+      // Map algo number to name
+      const algoNames = { 1: 'FCFS', 2: 'SJF', 3: 'SRTN', 4: 'PRIORITY-P', 5: 'PRIORITY-NP', 6: 'RR' };
+      const algoKeys = { 1: 'fcfs', 2: 'sjf', 3: 'srtn', 4: 'pp', 5: 'pnp', 6: 'rr' };
+      
+      let outText = `$ bash q17.sh\n1 FCFS 2 SJF 3 SRTN 4 PRIORITY-P 5 PRIORITY-NP 6 RR\nChoose: ${algo} (${algoNames[algo]})\nProcesses: ${n}\n`;
+      if (algo === 6) outText += `Quantum: ${qVal}\n`;
+      P.forEach((p, idx) => {
+        outText += `P${idx+1} arrival burst priority: ${p[0]} ${p[1]} ${p[2]}\n`;
+      });
+
+      // Run scheduler calculation
+      const tl = algo === 6 ? rr(P, qVal, 0) : pre(P, algoKeys[algo]);
+      let tt = 0, tw = 0;
+      P.forEach((p, i) => {
+        const finish = tl.lastIndexOf(i) + 1;
+        const tat = finish - p[0];
+        const wt = tat - p[1];
+        tt += tat;
+        tw += wt;
+        outText += `P${i+1} finish=${finish} TAT=${tat} WT=${wt}\n`;
+      });
+      outText += `Average TAT=${(tt / P.length).toFixed(2)}  Average WT=${(tw / P.length).toFixed(2)}`;
+      term.textContent = outText;
+      break;
+    }
+    case 10: { // FCFS
+      const raw = ($('run_sched_inp')?.value || '').trim().split('\n').map(l => l.trim()).filter(Boolean);
+      if (!raw.length) { term.textContent = 'Please enter process count and arrival burst pairs.'; break; }
+      const n = parseInt(raw[0], 10);
+      const procs = [];
+      for (let i = 1; i <= n && i < raw.length; i++) {
+        const [a, b] = raw[i].split(/\s+/).map(Number);
+        procs.push({ id: i, a: a || 0, b: b || 1 });
+      }
+      if (!procs.length) { term.textContent = 'No valid processes parsed.'; break; }
+      // Sort by arrival for FCFS
+      let t = 0, tt = 0, tw = 0;
+      let outText = `$ bash q10.sh\nProcesses: ${n}\n`;
+      procs.forEach(p => {
+        outText += `P${p.id} arrival burst: ${p.a} ${p.b}\n`;
+        if (t < p.a) t = p.a;
+        t += p.b;
+        const tat = t - p.a;
+        const wt = tat - p.b;
+        tt += tat;
+        tw += wt;
+        outText += `P${p.id} finish=${t} TAT=${tat} WT=${wt}\n`;
+      });
+      outText += `Average TAT=${(tt / procs.length).toFixed(2)}  Average WT=${(tw / procs.length).toFixed(2)}`;
+      term.textContent = outText;
+      break;
+    }
+    default: {
+      term.textContent = `$ ${o.c}\n${o.i ? o.i + '\n' : ''}${o.o}`;
+      break;
+    }
+  }
+}
+
+
+function copyCurrentScript(btn) {
+  const code = D[cur].code.join('\n');
+  navigator.clipboard.writeText(code).then(() => {
+    const origText = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(() => btn.innerHTML = origText, 1800);
+  }).catch(() => {
+    btn.textContent = 'Copy failed';
+  });
+}
+
+// Download .sh
+function downloadCurrentScript() {
+  const qNum = cur + 1;
+  const pad = qNum < 10 ? '0' + qNum : qNum;
+  const cleanName = D[cur].t.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const fileName = `${pad}_${cleanName}.sh`;
+  const content = `#!/usr/bin/env bash\n# ${D[cur].t}\n\n` + D[cur].code.join('\n') + '\n';
+  
+  const blob = new Blob([content], { type: 'application/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Download All Scripts
+function downloadAllScripts() {
+  let bundle = "#!/usr/bin/env bash\n# OS Lab Scripts Bundle (23 Questions)\n# Generated from OS Lab Study Guide\n\n";
+  D.forEach((d, i) => {
+    bundle += `\n# ==========================================\n`;
+    bundle += `# Question ${i+1}: ${d.t}\n`;
+    bundle += `# ==========================================\n`;
+    bundle += d.code.join('\n') + '\n';
+  });
+  
+  const blob = new Blob([bundle], { type: 'application/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'all_23_os_lab_scripts.sh';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Sample Run Card
+function renderSampleRun(qNum) {
+  const o = OUT[qNum];
+  if (!o) return '';
+  return `
+    <div style="margin-top:20px">
+      <h3 style="font-size:16px;margin:0 0 8px">Verified Linux Execution</h3>
+      <div class="sim-grid">
+        ${o.i ? `
+        <div>
+          <small style="color:var(--mut);font-weight:600">INPUT (stdin)</small>
+          <pre class="code-block" style="padding:10px 14px;margin-top:4px;border-radius:8px">${esc(o.i)}</pre>
+        </div>` : ''}
+        <div style="${!o.i ? 'grid-column:1/-1' : ''}">
+          <small style="color:var(--mut);font-weight:600">TERMINAL OUTPUT (stdout)</small>
+          <pre class="code-block" style="padding:10px 14px;margin-top:4px;border-radius:8px;color:#86efac">$ ${esc(o.c)}\n${esc(o.o)}</pre>
+        </div>
+      </div>
+      ${o.n ? `<p style="color:var(--mut);font-size:13px;margin:6px 0 0">${esc(o.n)}</p>` : ''}
+    </div>
+  `;
+}
+
+// Step Walkthrough
+function step(dir) {
+  const d = D[cur];
+  let k = st;
+  do k += dir; while (k >= 0 && k < d.code.length && !d.notes[k]);
+  if (k < 0 || k >= d.code.length) return;
+  st = k;
+  document.querySelectorAll('.ln').forEach((e, j) => e.classList.toggle('on', j === k));
+  $('say').innerHTML = `<strong>Line ${k + 1}:</strong> ${esc(d.notes[k])}`;
+}
+
+// Viva Voce Renderer
+function renderVivaQuestions(qNum) {
+  const items = VIVA[qNum] || [];
+  if (!items.length) return '<p class="say">No viva questions recorded for this topic.</p>';
+  return items.map((it, idx) => `
+    <div class="viva-item">
+      <div class="viva-q" onclick="toggleVivaAnswer(this)">
+        <span>Q${idx+1}: ${esc(it.q)}</span>
+        <span style="font-size:16px;color:var(--mut)">▾</span>
+      </div>
+      <div class="viva-a" style="display:block">
+        <strong>Examiner Answer:</strong> ${esc(it.a)}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleVivaAnswer(headerElem) {
+  const ans = headerElem.nextElementSibling;
+  const isShown = ans.style.display !== 'none';
+  ans.style.display = isShown ? 'none' : 'block';
+  headerElem.querySelector('span:last-child').textContent = isShown ? '▸' : '▾';
+}
+
+function toggleAllViva() {
+  const allAns = document.querySelectorAll('.viva-a');
+  const anyVisible = Array.from(allAns).some(a => a.style.display !== 'none');
+  allAns.forEach(a => a.style.display = anyVisible ? 'none' : 'block');
+  document.querySelectorAll('.viva-q span:last-child').forEach(s => s.textContent = anyVisible ? '▸' : '▾');
+}
+
+// Practice Mode Card
+function renderPracticeCard() {
+  const d = D[cur];
+  const qNum = cur + 1;
+  const o = OUT[qNum] || {};
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <p style="margin:0;color:var(--mut);font-size:13.5px">Write the complete shell script from memory. Press <strong>▶ Check My Script</strong> to test it against the model answer.</p>
+      <div style="display:flex;gap:6px">
+        <button class="btn-sec" onclick="showPracticeHint()">💡 Hint</button>
+        <button class="btn-sec" onclick="showPracticeAnswer()">👁️ Show Answer</button>
+        <button class="btn-sec" onclick="clearPractice()">↺ Clear</button>
+      </div>
+    </div>
+    <textarea class="pc" id="pta" spellcheck="false" placeholder="Write your shell script here... (Tab key inserts spaces, Ctrl+Enter to Run)" oninput="dr()" onkeydown="handlePracticeKey(event)">${esc(DR[cur] || '')}</textarea>
+    <div style="margin:10px 0;display:flex;gap:10px;align-items:center">
+      <button onclick="prun()">▶ Check My Script</button>
+      <small style="color:var(--mut)">Line-by-line syntax & logic comparison with automated fix suggestions.</small>
+    </div>
+    <div id="prs"></div>
+  `;
+}
+
+// Interactive Playground / Simulator Handlers
+function renderInteractivePlayground(idx) {
+  const qNum = idx + 1;
+  switch(qNum) {
+    case 1:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q1 · Prime Number Checker</h3>
+          <p style="color:var(--mut);font-size:13.5px">Tests trial division up to &lfloor;&radic;n&rfloor;. Divisors beyond the square root are redundant.</p>
+          <div class="sim-controls">
+            <label>Number: <input type="number" id="sim1_n" value="17" min="0" style="width:110px"></label>
+            <button onclick="runSim1()">▶ Test Prime</button>
+            <button class="btn-sec" onclick="$('sim1_n').value=29;runSim1()">Try 29</button>
+            <button class="btn-sec" onclick="$('sim1_n').value=97;runSim1()">Try 97</button>
+            <button class="btn-sec" onclick="$('sim1_n').value=100;runSim1()">Try 100</button>
+            <button class="btn-sec" onclick="$('sim1_n').value=1;runSim1()">Try 1</button>
+          </div>
+          <div id="sim1_out" class="sim-result">Press 'Test Prime' to see the step-by-step trial division output.</div>
+        </div>
+      `;
+    case 2:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q2 · Palindrome Checker</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates <code>[ "$s" = "$(rev <<< "$s")" ]</code> by reversing the string and testing character symmetry.</p>
+          <div class="sim-controls">
+            <label>Word or number: <input type="text" id="sim2_s" value="racecar" style="width:200px"></label>
+            <button onclick="runSim2()">▶ Check Palindrome</button>
+            <button class="btn-sec" onclick="$('sim2_s').value='level';runSim2()">Try 'level'</button>
+            <button class="btn-sec" onclick="$('sim2_s').value='12321';runSim2()">Try '12321'</button>
+            <button class="btn-sec" onclick="$('sim2_s').value='operating';runSim2()">Try 'operating'</button>
+          </div>
+          <div id="sim2_out" class="sim-result">Press 'Check Palindrome' to test string reversal.</div>
+        </div>
+      `;
+    case 3:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q3 · Smallest & Largest Number Finder</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates <code>sort -n</code> array sorting and array indexing <code>s[0]</code> and <code>s[-1]</code>.</p>
+          <div class="sim-controls">
+            <label>Space-separated numbers: <input type="text" id="sim3_s" value="5 -3 12 7 0" style="width:260px"></label>
+            <button onclick="runSim3()">▶ Find Min & Max</button>
+            <button class="btn-sec" onclick="$('sim3_s').value='42 17 99 -8 0 23';runSim3()">Sample 2</button>
+            <button class="btn-sec" onclick="$('sim3_s').value='100 200 -50 0';runSim3()">Sample 3</button>
+          </div>
+          <div id="sim3_out" class="sim-result">Enter numbers and click 'Find Min & Max'.</div>
+        </div>
+      `;
+    case 4:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q4 · String Search in File (grep -n)</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates <code>grep -n "$s" "$f" || echo "Not found"</code> across a simulated file.</p>
+          <div class="sim-grid">
+            <div>
+              <label>Virtual File Content (<code>notes.txt</code>):</label>
+              <textarea id="sim4_f" class="sim-area" rows="6">apple
+banana
+apple pie
+orange
+pineapple
+pear</textarea>
+            </div>
+            <div>
+              <label>Search Pattern: <input type="text" id="sim4_s" value="apple" style="width:160px;margin-bottom:8px"></label><br>
+              <button onclick="runSim4()">▶ Run grep -n</button>
+              <div id="sim4_out" class="sim-result" style="margin-top:10px">Matching lines will appear here with line numbers.</div>
+            </div>
+          </div>
+        </div>
+      `;
+    case 5:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q5 · File, Directory & Executable Counter</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates <code>find $d -maxdepth 1 -type f</code>, <code>-type d</code> and <code>-executable</code>.</p>
+          <div class="sim-controls">
+            <button onclick="runSim5()">▶ Count Directory Items</button>
+            <button class="btn-sec" onclick="addSim5File()">+ Add File</button>
+            <button class="btn-sec" onclick="addSim5Dir()">+ Add Subdir</button>
+            <button class="btn-sec" onclick="resetSim5()">↺ Reset Virtual Dir</button>
+          </div>
+          <div id="sim5_vfs" style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap"></div>
+          <div id="sim5_out" class="sim-result">Click 'Count Directory Items' to run find counts.</div>
+        </div>
+      `;
+    case 6:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q6 · File, Directory or Something Else Inspector</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates conditional tests: <code>[ -f "$n" ]</code>, <code>[ -d "$n" ]</code>, and <code>[ -e "$n" ]</code>.</p>
+          <div class="sim-controls">
+            <label>Item Type:
+              <select id="sim6_sel" onchange="runSim6()" style="padding:6px;border-radius:6px;background:var(--bg);color:var(--fg);border:1px solid var(--bd)">
+                <option value="f">Regular File (notes.txt)</option>
+                <option value="d">Directory (my_folder/)</option>
+                <option value="l">Symbolic Link (shortcut -> notes.txt)</option>
+                <option value="b">Device File (/dev/sda1)</option>
+                <option value="x">Non-existent item (missing.txt)</option>
+              </select>
+            </label>
+            <button onclick="runSim6()">▶ Inspect Item</button>
+          </div>
+          <div id="sim6_out" class="sim-result">Choose an item type to inspect the evaluation path.</div>
+        </div>
+      `;
+    case 7:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q7 · C Compiler & Executable Generator</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates <code>gcc "$1" -o "\${1%.c}" && chmod +x "\${1%.c}" && ./"\${1%.c}"</code>.</p>
+          <div class="sim-controls">
+            <button onclick="runSim7()">▶ Compile and Run (gcc hello.c -o hello)</button>
+          </div>
+          <div id="sim7_out" class="sim-result" style="color:#86efac;background:#080c10">Press 'Compile and Run' to execute the build pipeline.</div>
+        </div>
+      `;
+    case 8:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q8 · Remove Even Lines In-Place (sed '2~2d')</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates stream editing with step address: deletes line 2, 4, 6... leaving only odd lines.</p>
+          <div class="sim-grid">
+            <div>
+              <label>Input File Lines:</label>
+              <textarea id="sim8_f" class="sim-area" rows="7">Line 1: Operating Systems
+Line 2: Delete this even line
+Line 3: Process Scheduling
+Line 4: Delete this even line
+Line 5: Virtual Memory
+Line 6: Delete this even line
+Line 7: Deadlock Avoidance</textarea>
+            </div>
+            <div>
+              <button onclick="runSim8()" style="margin-bottom:10px">▶ Run sed '2~2d'</button>
+              <div id="sim8_out" class="sim-result">Output with even lines removed will appear here.</div>
+            </div>
+          </div>
+        </div>
+      `;
+    case 9:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">Q9 · Duplicate File Cleanup (md5sum + awk + rm)</h3>
+          <p style="color:var(--mut);font-size:13.5px">Simulates hashing files with <code>md5sum</code>, grouping duplicate hashes, and keeping only the original.</p>
+          <div class="sim-controls">
+            <button onclick="runSim9()">▶ Detect & Remove Duplicates</button>
+            <button class="btn-sec" onclick="resetSim9()">↺ Reset Test Files</button>
+          </div>
+          <div id="sim9_files" style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap"></div>
+          <div id="sim9_out" class="sim-result">Click 'Detect & Remove Duplicates' to run MD5 duplicate filtering.</div>
+        </div>
+      `;
+    default:
+      return `
+        <div class="sim-box">
+          <h3 style="margin-top:0">${esc(D[idx].t)}</h3>
+          <p style="color:var(--mut);font-size:13.5px">This algorithm has a dedicated visualizer. Use the <strong>📊 Visualizer</strong> tab to explore dynamic execution, parameter changes, and step-by-step Gantt simulation.</p>
+          <button onclick="switchTab('viz')">Go to Visualizer ▶</button>
+        </div>
+      `;
+  }
+}
+
+function initPlayground(idx) {
+  const qNum = idx + 1;
+  // Initialize virtual filesystem states without automatically executing the run
+  if (qNum === 5) { resetSim5(); }
+  else if (qNum === 9) { resetSim9(); }
+}
+
+// Simulator functions
+function runSim1() {
+  const n = parseInt($('sim1_n').value, 10);
+  const out = $('sim1_out');
+  if (isNaN(n) || n < 0) {
+    out.innerHTML = '<span style="color:var(--danger)">Please enter a valid non-negative integer.</span>';
+    return;
+  }
+  if (n < 2) {
+    out.innerHTML = `<strong>Result:</strong> <span style="color:var(--danger)">Not prime</span><br><small style="color:var(--mut)">0 and 1 are not prime by definition.</small>`;
+    return;
+  }
+  let isPrime = true;
+  let factor = -1;
+  const limit = Math.floor(Math.sqrt(n));
+  const checked = [];
+  
+  for (let i = 2; i * i <= n; i++) {
+    checked.push(i);
+    if (n % i === 0) {
+      isPrime = false;
+      factor = i;
+      break;
+    }
+  }
+  
+  if (isPrime) {
+    out.innerHTML = `<strong>Result:</strong> <span style="color:var(--success);font-weight:700">Prime</span><br>
+    <small style="color:var(--mut)">Checked divisors: ${checked.length ? checked.join(', ') : 'none needed'} up to &lfloor;&radic;${n}&rfloor; = ${limit}. No divisor divides ${n} evenly.</small>`;
+  } else {
+    out.innerHTML = `<strong>Result:</strong> <span style="color:var(--danger);font-weight:700">Not prime</span><br>
+    <small style="color:var(--mut)">Composite: divisible by ${factor} (${factor} &times; ${n / factor} = ${n}).</small>`;
+  }
+}
+
+function runSim2() {
+  const s = ($('sim2_s').value || '').trim();
+  const rev = s.split('').reverse().join('');
+  const isPal = s === rev;
+  $('sim2_out').innerHTML = `
+    <strong>Original:</strong> "${esc(s)}"<br>
+    <strong>Reversed:</strong> "${esc(rev)}"<br>
+    <strong>Status:</strong> ${isPal ? '<span style="color:var(--success);font-weight:700">✓ Palindrome</span>' : '<span style="color:var(--danger);font-weight:700">✗ Not palindrome</span>'}
+  `;
+}
+
+function runSim3() {
+  const str = $('sim3_s').value.trim();
+  const nums = str.split(/\s+/).map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+  if (!nums.length) {
+    $('sim3_out').innerHTML = '<span style="color:var(--danger)">Enter at least one valid number.</span>';
+    return;
+  }
+  const sorted = [...nums].sort((a,b) => a - b);
+  $('sim3_out').innerHTML = `
+    <strong>Original Array:</strong> [ ${nums.join(', ')} ]<br>
+    <strong>Sorted (sort -n):</strong> [ ${sorted.join(', ')} ]<br>
+    <strong>Smallest \${s[0]}:</strong> <span style="color:var(--ac);font-weight:700">${sorted[0]}</span> &nbsp;|&nbsp; 
+    <strong>Largest \${s[-1]}:</strong> <span style="color:var(--ac);font-weight:700">${sorted[sorted.length-1]}</span>
+  `;
+}
+
+function runSim4() {
+  const lines = ($('sim4_f').value || '').split('\n');
+  const pat = ($('sim4_s').value || '').trim();
+  if (!pat) {
+    $('sim4_out').innerHTML = '<span style="color:var(--warning)">Enter a search pattern.</span>';
+    return;
+  }
+  const matches = [];
+  lines.forEach((l, idx) => {
+    if (l.includes(pat)) {
+      matches.push(`<strong>${idx+1}:</strong> ` + esc(l).replace(new RegExp(esc(pat), 'g'), `<mark class="gd">${esc(pat)}</mark>`));
+    }
+  });
+  if (matches.length) {
+    $('sim4_out').innerHTML = matches.join('<br>');
+  } else {
+    $('sim4_out').innerHTML = '<span style="color:var(--danger)">Not found</span> (exit status 1)';
+  }
+}
+
+let sim5Vfs = [];
+function resetSim5() {
+  sim5Vfs = [
+    { name: 'notes.txt', type: 'f', exec: false },
+    { name: 'data.csv', type: 'f', exec: false },
+    { name: 'run.sh', type: 'f', exec: true },
+    { name: 'backup/', type: 'd', exec: true },
+    { name: 'docs/', type: 'd', exec: true }
+  ];
+  renderSim5Vfs();
+}
+function renderSim5Vfs() {
+  const c = $('sim5_vfs');
+  c.innerHTML = sim5Vfs.map((item, idx) => `
+    <div style="background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:12px;display:flex;align-items:center;gap:6px">
+      <span>${item.type==='d' ? '📁' : item.exec ? '⚙️' : '📄'} ${esc(item.name)}</span>
+      ${item.type==='f' ? `<label style="color:var(--mut);cursor:pointer"><input type="checkbox" ${item.exec?'checked':''} onchange="sim5Vfs[${idx}].exec=this.checked;runSim5()"> +x</label>` : ''}
+      <button class="btn-subtle" onclick="sim5Vfs.splice(${idx},1);renderSim5Vfs();runSim5()">✕</button>
+    </div>
+  `).join('');
+}
+function addSim5File() {
+  const name = 'file_' + (sim5Vfs.length + 1) + '.txt';
+  sim5Vfs.push({ name, type: 'f', exec: false });
+  renderSim5Vfs();
+  runSim5();
+}
+function addSim5Dir() {
+  const name = 'folder_' + (sim5Vfs.length + 1) + '/';
+  sim5Vfs.push({ name, type: 'd', exec: true });
+  renderSim5Vfs();
+  runSim5();
+}
+function runSim5() {
+  const files = sim5Vfs.filter(x => x.type === 'f').length;
+  const dirs = sim5Vfs.filter(x => x.type === 'd').length;
+  const execs = sim5Vfs.filter(x => x.type === 'f' && x.exec).length;
+  $('sim5_out').innerHTML = `
+    <strong>Files:</strong> ${files} (find $d -maxdepth 1 -type f | wc -l)<br>
+    <strong>Dirs:</strong> ${dirs} (find $d -maxdepth 1 -type d | wc -l minus parent)<br>
+    <strong>Executables:</strong> ${execs} (find $d -maxdepth 1 -type f -executable | wc -l)
+  `;
+}
+
+function runSim6() {
+  const v = $('sim6_sel').value;
+  let res = '';
+  let path = '';
+  if (v === 'f') {
+    path = 'notes.txt';
+    res = `[ -f "$n" ] is TRUE &rarr; Output: <strong>File</strong>`;
+  } else if (v === 'd') {
+    path = 'my_folder/';
+    res = `[ -f "$n" ] is false, elif [ -d "$n" ] is TRUE &rarr; Output: <strong>Directory</strong>`;
+  } else if (v === 'l' || v === 'b') {
+    path = v === 'l' ? 'shortcut.lnk' : '/dev/sda1';
+    res = `[ -f ] false, [ -d ] false, elif [ -e "$n" ] is TRUE &rarr; Output: <strong>Something else (link, device...)</strong>`;
+  } else {
+    path = 'missing.txt';
+    res = `All tests false &rarr; Output: <strong>Does not exist</strong>`;
+  }
+  $('sim6_out').innerHTML = `Testing: <code>"${path}"</code><br>${res}`;
+}
+
+function runSim7() {
+  $('sim7_out').innerHTML = `
+    $ gcc hello.c -o hello<br>
+    $ chmod +x hello<br>
+    $ ./hello<br>
+    <span style="color:#ffffff;font-weight:700">Hello OS</span><br>
+    <span style="color:var(--success)">[Process exited with code 0]</span>
+  `;
+}
+
+function runSim8() {
+  const lines = ($('sim8_f').value || '').split('\n');
+  const kept = [];
+  const preview = [];
+  lines.forEach((l, idx) => {
+    const lineNum = idx + 1;
+    if (lineNum % 2 === 0) {
+      preview.push(`<span style="color:var(--danger);text-decoration:line-through">[Line ${lineNum}] ${esc(l)}</span>`);
+    } else {
+      preview.push(`<span style="color:var(--success)">[Line ${lineNum}] ${esc(l)}</span>`);
+      kept.push(l);
+    }
+  });
+  $('sim8_out').innerHTML = `
+    <strong>sed '2~2d' Action Preview:</strong><br>
+    ${preview.join('<br>')}<br><br>
+    <strong>Resulting File Content:</strong>
+    <pre class="code-block" style="padding:8px 12px;margin:4px 0">${esc(kept.join('\n'))}</pre>
+  `;
+}
+
+let sim9Files = [];
+function resetSim9() {
+  sim9Files = [
+    { name: 'doc1.pdf', hash: '8f9b4c2...', isDup: false },
+    { name: 'doc1_copy.pdf', hash: '8f9b4c2...', isDup: true },
+    { name: 'report.docx', hash: '1a2b3c4...', isDup: false },
+    { name: 'report_old.docx', hash: '1a2b3c4...', isDup: true },
+    { name: 'image.png', hash: '7e6d5c4...', isDup: false }
+  ];
+  renderSim9Files();
+}
+function renderSim9Files() {
+  $('sim9_files').innerHTML = sim9Files.map(f => `
+    <div style="background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:12px">
+      📄 ${esc(f.name)} <code style="color:var(--mut)">[${f.hash}]</code>
+    </div>
+  `).join('');
+}
+function runSim9() {
+  const removed = sim9Files.filter(f => f.isDup);
+  const kept = sim9Files.filter(f => !f.isDup);
+  $('sim9_out').innerHTML = `
+    <strong>Identified Duplicates (via awk 'seen[$1]++'):</strong><br>
+    ${removed.map(f => `<span style="color:var(--danger)">removed '${esc(f.name)}' (duplicate hash: ${f.hash})</span>`).join('<br>')}<br><br>
+    <strong>Files Preserved:</strong><br>
+    ${kept.map(f => `<span style="color:var(--success)">preserved '${esc(f.name)}'</span>`).join('<br>')}
+  `;
+}
+
+// Visualizer Handlers (Gantt, Banker's, Dekker, Philosophers, Producer-Consumer)
+let vizP = [[0,5,2],[1,3,1],[2,8,3],[3,6,2]];
+function initVisualizer(v) {
+  const z = $('viz-content');
+  if (!z) return;
+  
+  if (['fcfs','sjf','srtn','pp','pnp','rrcs','rr','mlq'].includes(v)) {
+    renderGanttVisualizer(v);
+  } else if (v === 'bank' || v === 'bankd') {
+    bank(v);
+  } else if (v === 'dekker') {
+    dekker();
+  } else if (v === 'phil') {
+    philViz();
+  } else if (v === 'pc') {
+    pcViz();
+  }
+}
+
+function renderGanttVisualizer(v) {
+  const z = $('viz-content');
+  const isPriority = v === 'pp' || v === 'pnp' || v === 'mlq';
+  const isRR = v.startsWith('rr');
+  const hasCS = v === 'rrcs';
+
+  z.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div>
+        <h3 style="margin:0">Live Interactive Gantt Visualizer</h3>
+        <small style="color:var(--mut)">Edit process arrivals, bursts, or priority numbers below. Smaller priority number = higher priority.</small>
+      </div>
+      <div style="display:flex;gap:6px">
+        <select onchange="applyGanttPreset(this.value, '${v}')" style="padding:5px 8px;border-radius:6px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font-size:13px">
+          <option value="default">Preset: Standard 4 Processes</option>
+          <option value="convoy">Preset: Convoy Effect (Long P1)</option>
+          <option value="equal">Preset: Equal Burst Jobs</option>
+          <option value="starve">Preset: High vs Low Priority</option>
+        </select>
+        <button class="btn-sec" onclick="addGanttRow('${v}')">+ Add Process</button>
+        <button class="btn-sec" onclick="removeGanttRow('${v}')">- Remove</button>
+      </div>
+    </div>
+
+    <div class="tw">
+      <table id="gantt-input-table">
+        <thead>
+          <tr>
+            <th>Process</th>
+            <th>Arrival Time (AT)</th>
+            <th>Burst Time (BT)</th>
+            <th>${v === 'mlq' ? 'Queue (1=Sys, 2=User)' : 'Priority'}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${vizP.map((p, i) => `
+            <tr>
+              <td><strong>P${i+1}</strong></td>
+              <td><input type="number" min="0" value="${p[0]}" oninput="runGantt('${v}')"></td>
+              <td><input type="number" min="1" value="${p[1]}" oninput="runGantt('${v}')"></td>
+              <td><input type="number" min="1" value="${p[2]}" oninput="runGantt('${v}')"></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin:10px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      ${isRR ? `<label>Time Quantum (q): <input id="q" type="number" min="1" value="2" style="width:60px" oninput="runGantt('${v}')"></label>` : ''}
+      ${hasCS ? `<label>Context Switch Overhead (cs): <input id="cs" type="number" min="0" value="1" style="width:60px" oninput="runGantt('${v}')"></label>` : ''}
+      <button onclick="runGantt('${v}')">▶ Update Gantt Chart</button>
+    </div>
+
+    <div id="gantt-out" style="margin-top:16px">
+      <div class="say" style="text-align:center;color:var(--mut);padding:24px 16px">
+        Ready to simulate. Adjust arrivals, bursts, or quantum above, then click <strong>▶ Update Gantt Chart</strong> to run the schedule.
+      </div>
+    </div>
+  `;
+}
+
+function addGanttRow(v) {
+  const idx = vizP.length + 1;
+  vizP.push([idx - 1, 4, idx]);
+  renderGanttVisualizer(v);
+}
+function removeGanttRow(v) {
+  if (vizP.length > 2) {
+    vizP.pop();
+    renderGanttVisualizer(v);
+  }
+}
+function applyGanttPreset(preset, v) {
+  if (preset === 'convoy') {
+    vizP = [[0, 20, 1], [1, 2, 2], [2, 2, 3], [3, 1, 4]];
+  } else if (preset === 'equal') {
+    vizP = [[0, 4, 1], [1, 4, 1], [2, 4, 1], [3, 4, 1]];
+  } else if (preset === 'starve') {
+    vizP = [[0, 8, 3], [1, 4, 1], [2, 2, 1], [3, 6, 4]];
+  } else {
+    vizP = [[0, 5, 2], [1, 3, 1], [2, 8, 3], [3, 6, 2]];
+  }
+  renderGanttVisualizer(v);
+}
+
+function runGantt(v) {
+  const rows = [...document.querySelectorAll('#gantt-input-table tbody tr')];
+  let P = rows.map(r => [...r.querySelectorAll('input')].map(x => Math.max(0, parseInt(x.value, 10) || 0)));
+  if (v === 'mlq') P = P.map(p => [0, p[1], p[2]]);
+  
+  const qVal = $('q') ? Math.max(1, parseInt($('q').value, 10) || 1) : 2;
+  const csVal = $('cs') ? Math.max(0, parseInt($('cs').value, 10) || 0) : 0;
+  
+  const tl = v.startsWith('rr') ? rr(P, qVal, csVal) : pre(P, v === 'mlq' ? 'pnp' : v);
+  
+  const seg = [];
+  tl.forEach((x, t) => {
+    const s = seg[seg.length - 1];
+    if (s && s.x === x) s.n++;
+    else seg.push({ x, n: 1, t });
+  });
+
+  const bg = x => x === -1 ? 'var(--bd)' : x === -2 ? 'repeating-linear-gradient(45deg,#555,#555 4px,#333 4px,#333 8px)' : `hsl(${(x*75+20)%360} 70% 45%)`;
+  
+  let tw = 0, tt = 0;
+  const tableRows = P.map((p, i) => {
+    const f = tl.lastIndexOf(i) + 1;
+    const tat = f - p[0];
+    const wt = tat - p[1];
+    tt += tat;
+    tw += wt;
+    return `<tr>
+      <td><strong>P${i+1}</strong></td>
+      <td>${p[0]}</td>
+      <td>${p[1]}</td>
+      <td>${f}</td>
+      <td><strong style="color:var(--ac)">${tat}</strong> <small style="color:var(--mut)">(${f} - ${p[0]})</small></td>
+      <td><strong style="color:var(--ac)">${wt}</strong> <small style="color:var(--mut)">(${tat} - ${p[1]})</small></td>
+    </tr>`;
+  }).join('');
+
+  const avgTat = (tt / P.length).toFixed(2);
+  const avgWt = (tw / P.length).toFixed(2);
+  const totalTime = tl.length;
+  const busyTicks = tl.filter(x => x >= 0).length;
+  const cpuUtil = totalTime > 0 ? ((busyTicks / totalTime) * 100).toFixed(1) : 0;
+
+  $('gantt-out').innerHTML = `
+    <h4>Gantt Timeline Chart</h4>
+    <div class="g">
+      ${seg.map((s, k) => `
+        <div class="s" style="flex:${s.n};background:${bg(s.x)};animation-delay:${k*0.06}s">
+          <span>${s.x >= 0 ? 'P' + (s.x+1) : s.x === -1 ? 'IDLE' : 'CS'}</span>
+          <i>${s.t}</i>
+        </div>
+      `).join('')}
+      <em>${totalTime}</em>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;margin:18px 0">
+      <div class="card" style="margin:0;padding:12px;text-align:center">
+        <small style="color:var(--mut)">Average Turnaround</small>
+        <div style="font-size:20px;font-weight:700;color:var(--ac)">${avgTat}</div>
+      </div>
+      <div class="card" style="margin:0;padding:12px;text-align:center">
+        <small style="color:var(--mut)">Average Waiting Time</small>
+        <div style="font-size:20px;font-weight:700;color:var(--ac)">${avgWt}</div>
+      </div>
+      <div class="card" style="margin:0;padding:12px;text-align:center">
+        <small style="color:var(--mut)">CPU Utilization</small>
+        <div style="font-size:20px;font-weight:700;color:var(--success)">${cpuUtil}%</div>
+      </div>
+      <div class="card" style="margin:0;padding:12px;text-align:center">
+        <small style="color:var(--mut)">Total Elapsed Time</small>
+        <div style="font-size:20px;font-weight:700">${totalTime} units</div>
+      </div>
+    </div>
+
+    <h4>Calculation Breakdown (Formulas: TAT = Completion &minus; Arrival, WT = TAT &minus; Burst)</h4>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Process</th>
+            <th>Arrival (AT)</th>
+            <th>Burst (BT)</th>
+            <th>Completion (CT)</th>
+            <th>Turnaround (TAT)</th>
+            <th>Waiting (WT)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function pre(P, a) {
+  let t = 0, rem = P.map(p => p[1]), tl = [], cur = -1, left = P.length;
+  const key = { fcfs: i => P[i][0], sjf: i => P[i][1], srtn: i => rem[i], pp: i => P[i][2], pnp: i => P[i][2] }[a];
+  const pm = a === 'srtn' || a === 'pp';
+  while (left) {
+    const c = P.map((_, i) => i).filter(i => P[i][0] <= t && rem[i] > 0);
+    if (!c.length) { tl.push(-1); t++; continue; }
+    if (cur < 0 || pm) cur = c.reduce((m, i) => key(i) < key(m) ? i : m);
+    tl.push(cur); rem[cur]--; t++;
+    if (!rem[cur]) { left--; cur = -1; }
+  }
+  return tl;
+}
+
+function rr(P, q, cs) {
+  let t = 0, rem = P.map(p => p[1]), Q = [], tl = [], add = new Set(), left = P.length;
+  const arr = () => P.forEach((p, i) => { if (p[0] <= t && !add.has(i)) { add.add(i); Q.push(i); } });
+  arr();
+  while (left) {
+    if (!Q.length) { tl.push(-1); t++; arr(); continue; }
+    const i = Q.shift();
+    const x = Math.min(q, rem[i]);
+    for (let k = 0; k < x; k++) { tl.push(i); t++; arr(); }
+    rem[i] -= x;
+    if (rem[i]) Q.push(i);
+    else left--;
+    if (cs && left) for (let k = 0; k < cs; k++) { tl.push(-2); t++; arr(); }
+  }
+  return tl;
+}
+
+// Banker's Algorithm Visualizer with Live Need Matrix
+let bs = [], bi = 0;
+function bank(v) {
+  const det = v === 'bankd';
+  const A = [[0,1,0],[2,0,0],[3,0,2],[2,1,1],[0,0,2]];
+  const M = det ? [[0,0,0],[2,0,2],[0,0,1],[1,0,0],[0,0,2]] : [[7,5,3],[3,2,2],[9,0,2],[2,2,2],[4,3,3]];
+  const W = det ? [0,0,0] : [3,3,2];
+  const inp = (x, c) => `<input type="number" min="0" class="${c}" value="${x}" style="width:46px;text-align:center">`;
+  const z = $('viz-content');
+  bs = []; bi = 0;
+  
+  z.innerHTML = `
+    <h3 style="margin-top:0">Visualisation · ${det ? 'Deadlock Detection' : 'Banker’s Algorithm (Safety Sequence)'}</h3>
+    <p style="color:var(--mut);font-size:13.5px">Edit Allocation, ${det ? 'Request' : 'Max'} or Work. The <strong>Need Matrix</strong> ($Need = Max &minus; Allocation$) is calculated automatically.</p>
+    
+    <div class="tw">
+      <table id="bt">
+        <thead>
+          <tr>
+            <th>Process</th>
+            <th colspan="3">Allocation (A B C)</th>
+            <th colspan="3">${det ? 'Request (A B C)' : 'Max Claim (A B C)'}</th>
+            <th colspan="3">${det ? 'Request Vector' : 'Need Matrix (Max &minus; Alloc)'}</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${A.map((a, i) => `
+            <tr>
+              <td><strong>P${i}</strong></td>
+              <td>${inp(a[0], 'a')}</td><td>${inp(a[1], 'a')}</td><td>${inp(a[2], 'a')}</td>
+              <td>${inp(M[i][0], 'm')}</td><td>${inp(M[i][1], 'm')}</td><td>${inp(M[i][2], 'm')}</td>
+              <td class="nd" colspan="3" style="font-weight:600;color:var(--ac)"></td>
+              <td class="stt" style="font-weight:600">Waiting</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin:12px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <strong>Available / Work Vector (A B C):</strong>
+      ${W.map(x => inp(x, 'wk')).join(' ')}
+      <button onclick="bstep(${det})">Step ▶</button>
+      <button class="btn-sec" onclick="bank('${v}')">↺ Reset</button>
+    </div>
+
+    <div class="say" id="bsay">Click 'Step ▶' to evaluate processes whose need fits inside Available resources.</div>
+  `;
+  
+  $('bt').oninput = () => bnd(det);
+  bnd(det);
+}
+
+function bnd(det) {
+  [...document.querySelectorAll('#bt tbody tr')].forEach(r => {
+    const a = [...r.querySelectorAll('.a')].map(x => +x.value);
+    const m = [...r.querySelectorAll('.m')].map(x => +x.value);
+    r.querySelector('.nd').textContent = (det ? m : m.map((x, j) => x - a[j])).join(' ');
+  });
+}
+
+function bstep(det) {
+  const R = [...document.querySelectorAll('#bt tbody tr')];
+  const w = [...document.querySelectorAll('.wk')];
+  const W = w.map(x => +x.value);
+  R.forEach(r => r.style.background = '');
+
+  for (let k = 0; k < R.length; k++) {
+    const i = (bi + k) % R.length;
+    const r = R[i];
+    const s = r.querySelector('.stt');
+    if (s.textContent !== 'Waiting') continue;
+    
+    const a = [...r.querySelectorAll('.a')].map(x => +x.value);
+    const m = [...r.querySelectorAll('.m')].map(x => +x.value);
+    const n = det ? m : m.map((x, j) => x - a[j]);
+
+    if (n.every((x, j) => x <= W[j])) {
+      s.textContent = 'Finished ✓';
+      s.style.color = 'var(--success)';
+      r.style.background = 'rgba(34, 197, 94, 0.15)';
+      a.forEach((x, j) => w[j].value = W[j] + x);
+      bs.push('P' + i);
+      bi = (i + 1) % R.length;
+      $('bsay').innerHTML = `<strong>P${i}</strong> can execute: ${det ? 'request' : 'need'} [${n.join(' ')}] &le; Work [${W.join(' ')}].<br>
+      It finishes and releases its resources [${a.join(' ')}]. New Available Work = [${a.map((x,j)=>x+W[j]).join(' ')}].<br>
+      <strong>Safe Sequence so far:</strong> ${bs.join(' &rarr; ')}`;
+      return;
+    }
+  }
+
+  const left = R.filter(r => r.querySelector('.stt').textContent === 'Waiting').length;
+  $('bsay').innerHTML = left 
+    ? (det ? '<strong style="color:var(--danger)">DEADLOCK DETECTED</strong>: No waiting process can proceed with current available resources.' 
+           : '<strong style="color:var(--danger)">UNSAFE STATE</strong>: Deadlock is possible because no waiting process can satisfy its max claim.')
+    : `<strong style="color:var(--success)">SAFE STATE VERIFIED!</strong> All processes finished.<br><strong>Complete Safe Sequence:</strong> ${bs.join(' &rarr; ')}`;
+}
+
+// Dekker's Algorithm Visualizer
+let di = 0;
+const DK = [
+  [0,0,0,'idle','idle','Start: turn = 0, both flags are 0. Critical section is empty.'],
+  [1,0,0,'wants in','idle','P0 sets flag f0 = 1: intention to enter critical section.'],
+  [1,1,0,'wants in','wants in','P1 sets flag f1 = 1 simultaneously: both intend to enter!'],
+  [1,1,0,'holds place','wants in','P0 sees f1 = 1 but turn = 0 (my turn), so P0 maintains position.'],
+  [1,0,0,'holds place','backs off','P1 sees f0 = 1 and turn != 1, so P1 withdraws f1 = 0 politely.'],
+  [1,0,0,'IN CRITICAL SECTION','backs off','P0 enters Critical Section alone. Mutual exclusion is preserved!'],
+  [0,0,1,'done','backs off','P0 exits: sets turn = 1 and clears flag f0 = 0.'],
+  [0,1,1,'done','wants in','P1 sees turn = 1 and sets flag f1 = 1.'],
+  [0,1,1,'done','IN CRITICAL SECTION','P1 enters Critical Section without conflict.'],
+  [0,0,0,'done','done','P1 exits: sets turn = 0 and f1 = 0. Both processes completed safely.']
+];
+
+function dekker() {
+  di = 0;
+  const z = $('viz-content');
+  z.innerHTML = `
+    <h3 style="margin-top:0">Visualisation · Dekker’s Algorithm State Machine</h3>
+    <p style="color:var(--mut);font-size:13.5px">Demonstrates how the <code>turn</code> variable breaks contention when both processes attempt to enter simultaneously.</p>
+    <div id="dk-view"></div>
+    <div style="margin:12px 0;display:flex;gap:8px">
+      <button class="btn-sec" onclick="dgo(-1)">◀ Previous Step</button>
+      <button onclick="dgo(1)">Next Step ▶</button>
+      <button class="btn-sec" onclick="di=0;dgo(0)">↺ Reset</button>
+    </div>
+  `;
+  dgo(0);
+}
+
+function dgo(x) {
+  di = Math.max(0, Math.min(DK.length - 1, di + x));
+  const [a, b, t, s0, s1, m] = DK[di];
+  const box = (n, f, s) => `
+    <div style="flex:1;min-width:140px;padding:14px;border-radius:10px;text-align:center;color:#fff;background:${s.includes('CRITICAL') ? 'var(--success)' : s === 'done' || s === 'idle' ? '#475569' : '#d97706'}">
+      <div style="font-size:16px;font-weight:700">Process P${n}</div>
+      <div style="margin:4px 0">Flag f${n} = <strong>${f}</strong></div>
+      <div style="font-size:12px;opacity:0.9">${s}</div>
+    </div>
+  `;
+
+  $('dk-view').innerHTML = `
+    <div style="display:flex;gap:12px;margin:12px 0;align-items:center;flex-wrap:wrap">
+      ${box(0, a, s0)}
+      <div style="background:var(--card-subtle);border:1px solid var(--bd);padding:10px 16px;border-radius:10px;text-align:center">
+        <small style="color:var(--mut)">TURN</small><br>
+        <strong style="font-size:26px;color:var(--ac)">${t}</strong>
+      </div>
+      ${box(1, b, s1)}
+    </div>
+    <div class="say"><strong>Step ${di + 1} of ${DK.length}:</strong> ${m}</div>
+  `;
+}
+
+// Dining Philosophers Animated Visualizer
+let pt = 0;
+let PH = { s: [0,0,0,0,0], t: [0,0,0,0,0], o: [-1,-1,-1,-1,-1], n: [0,0,0,0,0] };
+function philViz() {
+  clearInterval(pt); pt = 0;
+  PH = { s: [0,0,0,0,0], t: [0,0,0,0,0], o: [-1,-1,-1,-1,-1], n: [0,0,0,0,0] };
+  $('viz-content').innerHTML = `
+    <h3 style="margin-top:0">Visualisation · Dining Philosophers (Resource Hierarchy)</h3>
+    <p style="color:var(--mut);font-size:13.5px">Deadlock is eliminated by making each philosopher take the <strong>lower-numbered fork first</strong>. This breaks the circular wait condition.</p>
+    <svg id="psv" viewBox="0 0 300 300" style="max-width:320px;width:100%;display:block;margin:auto"></svg>
+    <div style="text-align:center;margin:12px 0">
+      <button onclick="togglePlayPhil()" id="phil-play-btn">▶ Start Simulation</button>
+    </div>
+    <div class="say" id="psay" style="text-align:center"></div>
+  `;
+  pdraw();
+}
+
+function togglePlayPhil() {
+  if (pt) {
+    clearInterval(pt); pt = 0;
+    $('phil-play-btn').textContent = '▶ Start Simulation';
+  } else {
+    pt = setInterval(ptick, 600);
+    $('phil-play-btn').textContent = '⏸ Pause Simulation';
+  }
+}
+
+function ptick() {
+  for (let i = 0; i < 5; i++) {
+    const a = i, b = (i + 1) % 5;
+    const lo = Math.min(a, b), hi = Math.max(a, b);
+    if (PH.s[i] === 0) {
+      if (Math.random() < 0.45) PH.s[i] = 1; // Hungry
+    } else if (PH.s[i] === 1) {
+      if (PH.o[lo] < 0) { PH.o[lo] = i; PH.s[i] = 2; } // Pick low fork
+    } else if (PH.s[i] === 2) {
+      if (PH.o[hi] < 0) { PH.o[hi] = i; PH.s[i] = 3; PH.t[i] = 3; } // Pick high fork -> Eat
+    } else if (--PH.t[i] <= 0) {
+      PH.o[lo] = PH.o[hi] = -1;
+      PH.s[i] = 0;
+      PH.n[i]++;
+    }
+  }
+  pdraw();
+}
+
+function pdraw() {
+  let h = '';
+  const col = ['#64748b', '#f59e0b', '#d97706', '#22c55e'];
+  // Draw Forks
+  for (let k = 0; k < 5; k++) {
+    const a = k * 1.2566 - 2.2;
+    const x = 150 + 105 * Math.cos(a);
+    const y = 150 + 105 * Math.sin(a);
+    const o = PH.o[k];
+    h += `<rect x="${x-3}" y="${y-14}" width="6" height="28" rx="3" transform="rotate(${a*57.3-90} ${x} ${y})" fill="${o < 0 ? '#475569' : `hsl(${o*72} 70% 50%)`}"/>`;
+    h += `<text x="${150+128*Math.cos(a)}" y="${154+128*Math.sin(a)}" font-size="10" text-anchor="middle" fill="currentColor">f${k}</text>`;
+  }
+  // Draw Philosophers
+  for (let i = 0; i < 5; i++) {
+    const a = i * 1.2566 - 1.5708;
+    const x = 150 + 105 * Math.cos(a);
+    const y = 150 + 105 * Math.sin(a);
+    h += `<circle cx="${x}" cy="${y}" r="22" fill="${col[PH.s[i]]}" stroke="#1e293b" stroke-width="2"/>`;
+    h += `<text x="${x}" y="${y+1}" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff">P${i}</text>`;
+    h += `<text x="${x}" y="${y+13}" font-size="8.5" text-anchor="middle" fill="#fff">${PH.n[i]} meals</text>`;
+  }
+  if ($('psv')) $('psv').innerHTML = h;
+  if ($('psay')) $('psay').innerHTML = '<strong>Total Meals Eaten:</strong> ' + PH.n.map((x, i) => `P${i}: <strong>${x}</strong>`).join(' &nbsp;|&nbsp; ');
+}
+
+// Producer-Consumer Animated Bounded Buffer
+let PC = { b: 0, p: 0, c: 0, ps: '', cs: '' };
+function pcViz() {
+  clearInterval(pt); pt = 0;
+  PC = { b: 0, p: 0, c: 0, ps: '', cs: '' };
+  $('viz-content').innerHTML = `
+    <h3 style="margin-top:0">Visualisation · Producer-Consumer Bounded Buffer</h3>
+    <p style="color:var(--mut);font-size:13.5px">Bounded buffer of 5 slots. Semaphores: <code>empty</code> slots and <code>full</code> items prevent buffer overflow and underflow.</p>
+    <div id="pc-slots" style="display:flex;gap:8px;justify-content:center;margin:18px 0"></div>
+    <div style="text-align:center;margin:12px 0">
+      <button onclick="togglePlayPC()" id="pc-play-btn">▶ Start Simulation</button>
+      <button class="btn-sec" onclick="stepPC()">Step Once</button>
+    </div>
+    <div class="sim-grid" style="margin-top:12px">
+      <div class="say"><strong>Producer Action:</strong><br><span id="pc-p-status">Idle</span></div>
+      <div class="say"><strong>Consumer Action:</strong><br><span id="pc-c-status">Idle</span></div>
+    </div>
+  `;
+  pcdraw();
+}
+
+function togglePlayPC() {
+  if (pt) {
+    clearInterval(pt); pt = 0;
+    $('pc-play-btn').textContent = '▶ Start Simulation';
+  } else {
+    pt = setInterval(pctick, 700);
+    $('pc-play-btn').textContent = '⏸ Pause Simulation';
+  }
+}
+
+function stepPC() { pctick(); }
+
+function pctick() {
+  PC.ps = PC.cs = '';
+  if (Math.random() < 0.6) {
+    if (PC.b < 5) {
+      PC.b++; PC.p++;
+      PC.ps = `Produced Item #${PC.p} &rarr; Inserted into buffer`;
+    } else {
+      PC.ps = '<strong style="color:var(--warning)">BLOCKED: wait(empty)</strong> Buffer is full (5/5)';
+    }
+  }
+  if (Math.random() < 0.5) {
+    if (PC.b > 0) {
+      PC.b--; PC.c++;
+      PC.cs = `Consumed Item #${PC.c} &rarr; Slot freed`;
+    } else {
+      PC.cs = '<strong style="color:var(--warning)">BLOCKED: wait(full)</strong> Buffer is empty (0/5)';
+    }
+  }
+  pcdraw();
+}
+
+function pcdraw() {
+  const slots = [0,1,2,3,4].map(i => `
+    <div style="width:50px;height:50px;border-radius:10px;border:2px solid var(--bd);background:${i < PC.b ? 'var(--ac)' : 'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">
+      ${i < PC.b ? '📦' : ''}
+    </div>
+  `).join('');
+  if ($('pc-slots')) $('pc-slots').innerHTML = slots;
+  if ($('pc-p-status')) $('pc-p-status').innerHTML = PC.ps || 'Waiting...';
+  if ($('pc-c-status')) $('pc-c-status').innerHTML = PC.cs || 'Waiting...';
+}
+
+// Quiz Functionality
+let qa = 0;
+function initQuiz() {
+  const d = D[cur];
+  const ks = d.code.map((_, k) => k).filter(k => d.notes[k]);
+  if (!ks.length) return;
+  qa = ks[Math.floor(Math.random() * ks.length)];
+  $('qq').innerHTML = `Which line performs this task?<br><span style="color:var(--ac)">&ldquo;${esc(d.notes[qa])}&rdquo;</span>`;
+  $('qr').textContent = 'Click on the matching line above to submit your answer.';
+  $('qp').innerHTML = d.code.map((c, k) => `
+    <div class="ln ql" onclick="checkQuizAnswer(${k}, this)">${syntaxHighlight(c)}</div>
+  `).join('');
+}
+
+function checkQuizAnswer(k, elem) {
+  if (k === qa) {
+    elem.classList.add('on');
+    $('qr').innerHTML = '<span style="color:var(--success);font-weight:700">✓ Correct! Excellent job.</span> Press "New Question" to challenge yourself again.';
+  } else {
+    $('qr').innerHTML = '<span style="color:var(--danger)">Not that line. Try again!</span>';
+  }
+}
+
+// Practice Mode Engine
+let DR = {}, MK = [], PS = [], PMd = [];
+const ld = () => { try { return JSON.parse(localStorage.getItem(NOTEBOOK_KEY)) || {}; } catch(e) { return {}; } };
+const sv = o => { try { localStorage.setItem(NOTEBOOK_KEY, JSON.stringify(o)); } catch(e) {}; };
+const kk = t => t.replace(/\s+/g, ' ').replace(/ ?([()<>=|&,+*\/%!?:{}\[\]-]) ?/g, '$1');
+
+function ncm(c) {
+  let o = '', q = '';
+  for (let i = 0; i < c.length; i++) {
+    const x = c[i];
+    if (q) { if (x === q && c[i-1] !== '\\') q = ''; o += x; continue; }
+    if (x === '"' || x === "'") { q = x; o += x; continue; }
+    if (x === '#' && (i === 0 || /\s/.test(c[i-1]))) { while (i < c.length && c[i] !== '\n') { o += ' '; i++; } i--; continue; }
+    o += x;
+  }
+  return o;
+}
+
+function stm(code0) {
+  const code = ncm(code0), out = [], L = code.length;
+  let st = 0, dp = 0, bd = 0, q = '';
+  const add = (t, a) => out.push({ t: t.replace(/\s+/g, ' '), k: kk(t), a, b: a + t.length, l: code.slice(0, a).split('\n').length });
+  const cut = i => {
+    const raw = code.slice(st, i), t = raw.trim();
+    if (t) {
+      const a = st + raw.indexOf(t), m = t.match(/^(then|do|else)\s+(\S[\s\S]*)$/);
+      if (m) { add(m[1], a); add(m[2], a + t.length - m[2].length); }
+      else add(t, a);
+    }
+    st = i + 1;
+  };
+  for (let i = 0; i < L; i++) {
+    const c = code[i], p = code[i-1], n = code[i+1];
+    if (q) { if (c === q && p !== '\\') q = ''; continue; }
+    if (c === '"' || c === "'") { q = c; continue; }
+    if (c === '$' && n === '{') { bd++; i++; continue; }
+    if (bd) { if (c === '}') bd--; continue; }
+    if (c === '(') dp++;
+    else if (c === ')') { if (dp) dp--; }
+    else if (!dp && (c === ';' || c === '\n' || (c === '&' && n !== '&' && p !== '&' && p !== '>'))) {
+      if (c === '\n' && /(\||&&|\\)\s*$/.test(code.slice(st, i).replace(/\s#.*$/, ''))) continue;
+      cut(i);
+    }
+  }
+  cut(L);
+  return out;
+}
+
+function lint(code) {
+  const E = [], ls = code.split('\n'), last = ls.length;
+  const cl = ls.map(l => {
+    let o = '', q = '';
+    for (let i = 0; i < l.length; i++) {
+      const c = l[i];
+      if (q) { if (c === q && l[i-1] !== '\\') q = ''; continue; }
+      if (c === '"' || c === "'") { q = c; o += '""'; continue; }
+      if (c === '#' && (i === 0 || /\s/.test(l[i-1]))) break;
+      o += c;
+    }
+    return { t: o.replace(/\$\{[^}]*\}/g, 'V'), u: !!q };
+  });
+  const e = (l, type, msg) => E.push({ l, type, msg, bash: 'bash: line ' + l + ': ' + msg });
+  cl.forEach((c, i) => {
+    const n = i + 1, t = c.t, nx = (cl.slice(i+1).find(x => x.t.trim()) || { t: '' }).t.trim();
+    if (c.u) e(n, 'unclosed quote', 'unexpected EOF while looking for matching quote');
+    if (/\b(if|elif)\b/.test(t) && !/\bthen\b/.test(t) && !/^then\b/.test(nx)) e(n, 'missing then', 'syntax error: "then" is missing after this if/elif');
+    if (/\b(for|while|until)\b/.test(t) && !/\bdo\b/.test(t) && !/^do\b/.test(nx)) e(n, 'missing do', 'syntax error: "do" is missing after this loop header');
+    if (/(\]|\)\))\s+(then|do)\b/.test(t)) e(n, 'missing ; before then/do', 'syntax error near unexpected token "' + t.match(/\s(then|do)\b/)[1] + '" (write ; or a new line before it)');
+    if (/(^|[\s;&|(])\[(?![\s\[])/.test(t) || /\[ [^\]]*[^\s\]]\]/.test(t)) e(n, 'spaces inside [ ]', 'command not found (a [ ] test needs a space after [ and before ])');
+    if (/(^|;)\s*[A-Za-z_]\w*( =|= )\s*\S/.test(t) && !/^\s*(for|if|while)\b/.test(t)) e(n, 'spaces around = in assignment', 'command not found (write n=5 with no spaces around =)');
+    const o = (t.match(/\(\(/g) || []).length, closeP = (t.match(/\)\)/g) || []).length;
+    if (o > closeP || (closeP > o && !/\$\(|=\(/.test(t))) e(n, 'unbalanced (( ))', 'syntax error: unbalanced (( )) in arithmetic');
+  });
+  return E.sort((a,b) => a.l - b.l);
+}
+
+function lcs(S, M) {
+  const n = S.length, m = M.length, T = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--)
+    for (let j = m - 1; j >= 0; j--)
+      T[i][j] = S[i].k === M[j].k ? T[i+1][j+1] + 1 : Math.max(T[i+1][j], T[i][j+1]);
+  const r = [];
+  let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (S[i].k === M[j].k) { r.push([i, j]); i++; j++; }
+    else if (T[i+1][j] >= T[i][j+1]) i++;
+    else j++;
+  }
+  return r;
+}
+
+function dr() {
+  if ($('pta')) DR[cur] = $('pta').value;
+}
+
+function handlePracticeKey(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    e.target.setRangeText('  ', e.target.selectionStart, e.target.selectionEnd, 'end');
+    dr();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    prun();
+  }
+}
+
+function clearPractice() {
+  DR[cur] = '';
+  if ($('pta')) $('pta').value = '';
+  if ($('prs')) $('prs').innerHTML = '';
+}
+function showPracticeHint() {
+  const n = D[cur].notes.filter(Boolean);
+  $('prs').innerHTML = '<div class="banner"><strong>💡 Key steps required:</strong></div><ol style="margin:4px 0 0;padding-left:20px">' + n.map(x => `<li>${esc(x)}</li>`).join('') + '</ol>';
+}
+function showPracticeAnswer() {
+  $('prs').innerHTML = '<div class="banner warn"><strong>👁️ Model Answer:</strong></div><pre class="code-block" style="padding:10px 14px">' + esc(D[cur].code.join('\n')) + '</pre>';
+}
+
+function prun(auto) {
+  const code = ($('pta')?.value || '').replace(/[\u201c\u201d]/g, '"').replace(/[\u2018\u2019]/g, "'");
+  const d = D[cur];
+  const R = $('prs');
+  if (!code.trim()) {
+    R.innerHTML = '<div class="banner warn">Write something first. Press Hint if you are stuck.</div>';
+    return;
+  }
+  const S = stm(code), M = stm(d.code.join('\n')), Le = lint(code), mt = lcs(S, M);
+  PS = S; PMd = M; MK = [];
+  mt.forEach(([i, j]) => { S[i].ok = 1; M[j].got = 1; });
+
+  let pi = 0, pj = 0;
+  [...mt, [S.length, M.length]].forEach(([i, j]) => {
+    const gs = [], gm = [];
+    for (let x = pi; x < i; x++) gs.push(x);
+    for (let y = pj; y < j; y++) gm.push(y);
+    const n = Math.min(gs.length, gm.length);
+    for (let x = 0; x < n; x++) MK.push({ y: 'wrong line (typo or logic)', s: gs[x], m: gm[x] });
+    for (let x = n; x < gs.length; x++) MK.push({ y: 'extra line', s: gs[x] });
+    for (let x = n; x < gm.length; x++) MK.push({ y: 'missing step', m: gm[x], after: i - 1 });
+    pi = i + 1; pj = j + 1;
+  });
+
+  MK.forEach((m, x) => { m.id = x; if (m.s != null) S[m.s].mk = m; });
+  const ok = !Le.length && !MK.length;
+  const gh = {};
+  MK.filter(m => m.m != null && m.s == null).forEach(m => { const l = m.after >= 0 ? S[m.after].l : 0; (gh[l] = gh[l] || []).push(m); });
+
+  const note = m => d.notes[PMd[m].l - 1] || 'a line of the model answer';
+  const ghost = m => `<div class="gh">⛔ Missing step: ${esc(note(m.m))} <button onclick="fx(${m.id})">Insert it</button></div>`;
+
+  let h = (gh[0] || []).map(ghost).join('');
+  code.split('\n').forEach((ln, k) => {
+    const n = k + 1, sts = S.filter(s => s.l === n), bad = sts.some(s => !s.ok), lerr = Le.filter(x => x.l === n);
+    h += `<div class="pr ${bad || lerr.length ? 'bad' : sts.length ? 'ok' : ''}"><i>${n}</i><span>${esc(ln)}</span></div>`;
+    lerr.forEach(x => h += `<div class="gh">❌ Syntax problem: <strong>${esc(x.type)}</strong>. ${esc(x.msg)}</div>`);
+    sts.filter(s => !s.ok).forEach(s => {
+      const m = s.mk, e = m && m.m != null ? PMd[m.m] : null;
+      h += '<div class="gh">' + (e ? `❌ Expected: <code>${esc(e.t)}</code> <button onclick="fx(${m.id})">Apply fix</button>` : `❌ Extra or misplaced statement. <button onclick="fx(${m.id})">Remove</button>`) + '</div>';
+    });
+    (gh[n] || []).forEach(m => h += ghost(m));
+  });
+
+  const ban = ok ? '<div class="banner good">✅ Perfect match! Every statement matches the tested model answer.</div>' : Le.length ? `<div class="banner err">❌ Syntax Error: Fix syntax problems below first.</div>` : '<div class="banner warn">⚠️ Logic Differences: Review highlighted lines.</div>';
+  R.innerHTML = ban + `<div style="margin:10px 0">${h}</div>`;
+
+  if (!auto) {
+    const s = ld();
+    s.q = s.q || {}; s.q[cur + 1] = s.q[cur + 1] || { a: 0 };
+    s.q[cur + 1].a++;
+    if (ok) s.q[cur + 1].ok = 1;
+    sv(s);
+  }
+}
+
+function fx(id) {
+  const m = MK[id], ta = $('pta');
+  let c = ta.value;
+  if (m.m != null && m.s != null) {
+    const s = PS[m.s];
+    c = c.slice(0, s.a) + PMd[m.m].t + c.slice(s.b);
+  } else if (m.s != null) {
+    const s = PS[m.s];
+    c = c.slice(0, s.a) + c.slice(s.b);
+  } else {
+    const p = m.after >= 0 ? PS[m.after].b : -1;
+    c = p < 0 ? PMd[m.m].t + '\n' + c : c.slice(0, p) + '\n' + PMd[m.m].t + c.slice(p);
+  }
+  ta.value = c;
+  dr();
+  prun(true);
+}
+
+function togglePracticeGlobal() {
+  switchTab('practice');
+}
+
+// Explain Mode Tooltip Dictionary Logic
+const DICT = {}, V = {};
+G.split('\n').forEach(l => {
+  const k = l.indexOf(' :: ');
+  if (k < 0) return;
+  const key = l.slice(0, k), tx = l.slice(k + 4);
+  key.startsWith('v:') ? key.slice(2).split('|').forEach(n => V[n] = tx) : DICT[key] = tx;
+});
+
+const CMDS = new Set(['read','grep','sed','find','wc','sort','tail','xargs','rm','gcc','flock','awk','chmod','[t']);
+const TR = /2>\/dev\/null|"(?:[^"$]|\$(?![({]))*"|'[^']*'|\$\(\(|\$\(|\$\{[^}]*\}|\$[A-Za-z_]\w*|\$[0-9#@?*]|<<<|>>|&&|\|\||;;|<=|>=|==|!=|\+\+|--|\+=|-=|<>\(\)|(?<=\s)-[A-Za-z]+|[A-Za-z_]\w*|\d+|\(\(|\)\)|\S/g;
+
+function toks(line) {
+  const o = []; let m, cmd = '';
+  TR.lastIndex = 0;
+  while (m = TR.exec(line)) {
+    const t = m[0], i = m.index;
+    o.push({ t, i, cmd });
+    let k = t;
+    if (t === '[') k = line[i+1] === ' ' ? '[t' : '[i';
+    if (CMDS.has(k)) cmd = k === '[t' ? '[' : k;
+  }
+  return o;
+}
+
+const nm = n => /^\d$/.test(n) ? 'argument ' + n : 'variable ' + n;
+function pat(t) {
+  const s = t.slice(2, -1);
+  let m;
+  if (m = s.match(/^#(\w+)\[@\]$/)) return 'Number of elements in array ' + m[1] + '.';
+  if (m = s.match(/^(\w+)\[@\]:(\d+)$/)) return 'Elements of array ' + m[1] + ' starting from index ' + m[2] + ' (:1 drops first element).';
+  if (m = s.match(/^(\w+)\[@\]$/)) return 'All elements of array ' + m[1] + ' as separate words.';
+  if (m = s.match(/^(\w+)\[(-?\w+)\]$/)) return 'Element ' + m[2] + ' of array ' + m[1] + ' (-1 means last element).';
+  if (m = s.match(/^(\w+)%(.+)$/)) return 'Strips shortest match of "' + m[2] + '" from end of ' + nm(m[1]) + '.';
+  if (m = s.match(/^(\w+):-(.*)$/)) return 'Value of ' + nm(m[1]) + ' or default "' + m[2] + '".';
+  return 'Parameter expansion: replaced by value described inside braces.';
+}
+
+function ex(o, line) {
+  const t = o.t, nx = line[o.i + t.length] || '', pv = line[o.i - 1] || '';
+  let k = t, b;
+  if (t === '[') k = nx === ' ' ? '[t' : '[i';
+  else if (t === ']') k = pv === ' ' ? ']t' : ']i';
+  else if (t === '&' && pv === '>') k = '>&';
+  else if (/^-[A-Za-z]/.test(t)) k = o.cmd + ' ' + t;
+  else if (t.length > 1 && t[0] === '"') k = '"str';
+  else if (t[0] === "'" && t.length > 1) k = t.startsWith("'BEGIN") ? 'awkB' : t;
+
+  b = DICT[k] || DICT[t];
+  if (k === '"str') b += ' Here: ' + t;
+  if (!b && t.startsWith('${')) b = pat(t);
+  if (!b && t[0] === '$') {
+    const n = t.slice(1);
+    b = '$ reads variable (' + n + '). ' + (/^\d$/.test(n) ? '$1 is first argument, $2 second.' : V[n] || '');
+  }
+  if (!b && /^\d+$/.test(t)) b = (nx === '>' || nx === '<') ? 'File descriptor ' + t : 'The number ' + t + '.';
+  if (!b && V[t]) b = 'Variable. ' + V[t];
+  return { h: t, b: b || 'Shell token, variable or command name.' };
+}
+
+function tk(line, note) {
+  let h = '', p = 0;
+  toks(line).forEach(o => {
+    const e = ex(o, line);
+    e.n = note || '';
+    h += esc(line.slice(p, o.i)) + `<span class="tk" data-e="${EX.length}">${esc(o.t)}</span>`;
+    EX.push(e);
+    p = o.i + o.t.length;
+  });
+  return h + esc(line.slice(p));
+}
+
+function tp(e) {
+  const t = e.target.closest && e.target.closest('.tk');
+  const tip = $('tip');
+  if (!t) { tip.style.display = 'none'; return; }
+  const x = EX[+t.dataset.e];
+  tip.innerHTML = `<strong>${esc(x.h)}</strong><br>${esc(x.b)}` + (x.n ? `<br><small style="color:#facc15">Line Logic: ${esc(x.n)}</small>` : '');
+  tip.style.display = 'block';
+  const r = t.getBoundingClientRect();
+  const w = tip.offsetWidth, hh = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left)) + 'px';
+  tip.style.top = (r.bottom + 8 + hh > window.innerHeight ? Math.max(8, r.top - hh - 8) : r.bottom + 8) + 'px';
+}
+document.addEventListener('mouseover', tp);
+document.addEventListener('click', tp);
+
+function xall() {
+  const hit = [...document.querySelectorAll('#cpre .ln')].map((l, k) => [k, [...l.querySelectorAll('.tk')]]);
+  let h = '<h4>Complete Program Logic</h4>';
+  hit.forEach(([k, ts]) => {
+    const n = D[cur].notes[k];
+    h += `<div class="say"><code>${esc(D[cur].code[k])}</code>` + (n ? `<br><strong>Logic:</strong> ${esc(n)}` : '') + '</div>';
+  });
+  $('xo').innerHTML = h;
+}
+
+// Modals: Mistakes, Cheat Sheet, Shortcuts
+function closeModal() {
+  $('modal-container').style.display = 'none';
+  $('modal-container').innerHTML = '';
+}
+
+function openMistakesModal() {
+  const s = ld();
+  const Q = s.q || {};
+  const ok = Object.values(Q).filter(x => x.ok).length;
+  
+  $('modal-container').style.display = 'flex';
+  $('modal-container').className = 'modal-overlay';
+  $('modal-container').innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📒 My Mistakes Notebook</h3>
+        <button class="btn-subtle" onclick="closeModal()">✕</button>
+      </div>
+      <p style="color:var(--mut);font-size:13.5px">Mastered <strong>${ok}</strong> of ${D.length} questions in Practice Mode. Green = solved perfectly, amber = attempted with mistakes.</p>
+      <div style="margin:14px 0;display:flex;gap:6px;flex-wrap:wrap">
+        ${D.map((d, i) => `
+          <a href="#q${i+1}" onclick="closeModal();show(${i})" style="display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;border-radius:8px;font-weight:600;text-decoration:none;background:${Q[i+1] ? (Q[i+1].ok ? 'var(--success)' : 'var(--warning)') : 'var(--bd)'};color:#fff">
+            ${i+1}
+          </a>
+        `).join('')}
+      </div>
+      <div style="margin-top:20px;text-align:right">
+        <button class="btn-sec" onclick="localStorage.removeItem(NOTEBOOK_KEY);openMistakesModal()">Clear Mistakes History</button>
+        <button onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  `;
+}
+
+function openCheatModal() {
+  $('modal-container').style.display = 'flex';
+  $('modal-container').className = 'modal-overlay';
+  $('modal-container').innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📖 Bash & OS Lab Quick Reference Cheat Sheet</h3>
+        <button class="btn-subtle" onclick="closeModal()">✕</button>
+      </div>
+      <div class="sim-grid">
+        <div>
+          <h4>Parameter Expansion</h4>
+          <table style="text-align:left">
+            <tr><td><code>\${v:-default}</code></td><td>If unset/empty, use default</td></tr>
+            <tr><td><code>\${v%pattern}</code></td><td>Remove shortest matching suffix (e.g. \${1%.c})</td></tr>
+            <tr><td><code>\${v#pattern}</code></td><td>Remove shortest matching prefix</td></tr>
+            <tr><td><code>\${#v}</code></td><td>String length</td></tr>
+            <tr><td><code>\${v:offset:len}</code></td><td>Substring extraction</td></tr>
+          </table>
+
+          <h4>Array Syntax</h4>
+          <table style="text-align:left">
+            <tr><td><code>a=(1 2 3)</code></td><td>Initialize array</td></tr>
+            <tr><td><code>\${a[@]}</code></td><td>All elements as separate words</td></tr>
+            <tr><td><code>\${#a[@]}</code></td><td>Array length / element count</td></tr>
+            <tr><td><code>\${a[-1]}</code></td><td>Last element (Bash 4.2+)</td></tr>
+            <tr><td><code>\${a[@]:1}</code></td><td>Slice from index 1 (drops first)</td></tr>
+            <tr><td><code>a+=($val)</code></td><td>Append element to array</td></tr>
+          </table>
+        </div>
+
+        <div>
+          <h4>Conditionals & Tests</h4>
+          <table style="text-align:left">
+            <tr><td><code>[ -f file ]</code></td><td>Regular file exists</td></tr>
+            <tr><td><code>[ -d dir ]</code></td><td>Directory exists</td></tr>
+            <tr><td><code>[ -e path ]</code></td><td>Path exists</td></tr>
+            <tr><td><code>[ -x file ]</code></td><td>File is executable</td></tr>
+            <tr><td><code>[ -z "$s" ]</code></td><td>String is empty</td></tr>
+            <tr><td><code>(( a < b ))</code></td><td>C-style arithmetic comparison</td></tr>
+            <tr><td><code>(( a % b == 0 ))</code></td><td>Modulo / divisibility test</td></tr>
+          </table>
+
+          <h4>Redirection & Utilities</h4>
+          <table style="text-align:left">
+            <tr><td><code><<< "$s"</code></td><td>Here-string (feed string to stdin)</td></tr>
+            <tr><td><code>2>/dev/null</code></td><td>Silence error messages (stderr)</td></tr>
+            <tr><td><code>exec 3<>pipe</code></td><td>Open pipe for read & write</td></tr>
+            <tr><td><code>grep -n</code></td><td>Print matching lines with line numbers</td></tr>
+            <tr><td><code>sed '2~2d'</code></td><td>Delete even lines in-place</td></tr>
+            <tr><td><code>awk 'seen[$1]++'</code></td><td>Filter duplicate lines/hashes</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="margin-top:20px;text-align:right">
+        <button onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  `;
+}
+
+function openShortcutsModal() {
+  $('modal-container').style.display = 'flex';
+  $('modal-container').className = 'modal-overlay';
+  $('modal-container').innerHTML = `
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header">
+        <h3>⌨️ Keyboard Shortcuts</h3>
+        <button class="btn-subtle" onclick="closeModal()">✕</button>
+      </div>
+      <table>
+        <tr><td><kbd>[</kbd> or <kbd>k</kbd></td><td>Navigate to Previous Question</td></tr>
+        <tr><td><kbd>]</kbd> or <kbd>j</kbd></td><td>Navigate to Next Question</td></tr>
+        <tr><td><kbd>c</kbd></td><td>Copy Current Shell Script</td></tr>
+        <tr><td><kbd>d</kbd></td><td>Download Current Shell Script (.sh)</td></tr>
+        <tr><td><kbd>m</kbd></td><td>Toggle "Mastered" Status</td></tr>
+        <tr><td><kbd>t</kbd></td><td>Toggle Dark / Light Theme</td></tr>
+        <tr><td><kbd>p</kbd></td><td>Switch to Practice Mode</td></tr>
+        <tr><td><kbd>/</kbd></td><td>Focus Search Bar</td></tr>
+        <tr><td><kbd>?</kbd></td><td>Open Cheat Sheet</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Close Modals / Overlays</td></tr>
+      </table>
+      <div style="margin-top:16px;text-align:right">
+        <button onclick="closeModal()">Got it</button>
+      </div>
+    </div>
+  `;
+}
+
+// Global Hotkeys Listener
+window.addEventListener('keydown', e => {
+  if (['input', 'textarea', 'select'].includes(document.activeElement?.tagName?.toLowerCase())) {
+    if (e.key === 'Escape') document.activeElement.blur();
+    return;
+  }
+  if (e.key === '[' || e.key === 'k') {
+    if (cur > 0) show(cur - 1);
+  } else if (e.key === ']' || e.key === 'j') {
+    if (cur < D.length - 1) show(cur + 1);
+  } else if (e.key === 'c') {
+    const code = D[cur].code.join('\n');
+    navigator.clipboard.writeText(code);
+  } else if (e.key === 'd') {
+    downloadCurrentScript();
+  } else if (e.key === 'm') {
+    toggleMastered(cur);
+  } else if (e.key === 't') {
+    toggleTheme();
+  } else if (e.key === 'p') {
+    switchTab('practice');
+  } else if (e.key === '/') {
+    e.preventDefault();
+    $('sq')?.focus();
+  } else if (e.key === '?') {
+    openCheatModal();
+  } else if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+// Hash routing
+function route() {
+  const hash = window.location.hash;
+  const num = parseInt(hash.replace(/[^0-9]/g, ''), 10);
+  if (!isNaN(num) && num >= 1 && num <= D.length) {
+    show(num - 1);
+  } else {
+    show(0);
+  }
+}
+window.addEventListener('hashchange', route);
+
+// Initialize
+renderNav();
+route();
+updateProgressUI();
+</script>
+</body>
+</html>
